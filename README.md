@@ -138,7 +138,7 @@ Oldest (head) on the left hand side and newer entries to the right hand side.
 
 ## Factorising a minimal implementation
 
-As this code is most suitable for embedding, this is a shortlist of the essential parts (prototype functions) needed for a minimal implementation. All other functions not mentioned here are simply ancillay functionality.
+As this code is most suitable for embedding, here is a shortlist of the essential parts (prototype functions) needed for a minimal implementation. All other functions, not mentioned here, are simply ancillay.
 
 - **LRUCache** -- the constructor is naturally a good thing to keep ;)
 - *LRUCache.prototype*.**put** -- handles appending and chaining.

@@ -122,6 +122,10 @@ LRUCache.prototype.find = function(key) {
   }
 }
 
+// ----------------------------------------------------------------------------
+// Following code is optional and can be removed without breaking the core
+// functionality.
+
 /**
  * Remove entry <key> from cache and return its value. Returns undefined if not
  * found.

@@ -136,6 +136,18 @@ Returns a string representation in the format:
 
 Oldest (head) on the left hand side and newer entries to the right hand side.
 
+## Factorising a minimal implementation
+
+As this code is most suitable for embedding, this is a shortlist of the essential parts (prototype functions) needed for a minimal implementation. All other functions not mentioned here are simply ancillay functionality.
+
+- **LRUCache** -- the constructor is naturally a good thing to keep ;)
+- *LRUCache.prototype*.**put** -- handles appending and chaining.
+- *LRUCache.prototype*.**unshift** -- used by **put** to "purge" an old entry.
+- *LRUCache.prototype*.**get** -- fetches a cached entry and registers that entry as being recently used.
+- *LRUCache.prototype*.**find** -- used by **get** to find a cached entry.
+
+The border between "required" and "optional" code is marked in `lru.js` by a comment starting with `// Following code is optional`...
+
 # MIT license
 
 Copyright (c) 2010 Rasmus Andersson <http://hunch.se/>

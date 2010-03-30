@@ -154,6 +154,32 @@ LRUCache.prototype.removeAll = function() {
   this.size = 0;
 }
 
+/**
+ * Call `fun` for each entry. Starting with the newest entry if `desc` is a true
+ * value, otherwise starts with the oldest (head) enrty and moves towards the
+ * tail.
+ *
+ * `fun` is called with 3 arguments in the context `context`:
+ *   `fun.call(context, Object key, Object value, LRUCache self)`
+ */
+LRUCache.prototype.forEach = function(fun, context, desc) {
+  if (context === true) { desc = true; context = undefined; }
+  else if (typeof context !== 'object') context = this;
+  if (desc) {
+    var entry = this.tail;
+    while (entry) {
+      fun.call(context, entry.key, entry.value, this);
+      entry = entry.older;
+    }
+  } else {
+    var entry = this.head;
+    while (entry) {
+      fun.call(context, entry.key, entry.value, this);
+      entry = entry.newer;
+    }
+  }
+}
+
 /** Returns a JSON (array) representation */
 LRUCache.prototype.toJSON = function() {
   var s = [], entry = this.head;
@@ -163,6 +189,7 @@ LRUCache.prototype.toJSON = function() {
   }
   return s;
 }
+
 /** Returns a String representation */
 LRUCache.prototype.toString = function() {
   var s = '', entry = this.head;
@@ -174,28 +201,5 @@ LRUCache.prototype.toString = function() {
   return s;
 }
 
-var sys = require('sys'), assert = require('assert');
-var c = new LRUCache(4);
-
-c.put('adam', 29);
-c.put('john', 26);
-c.put('angela', 24);
-c.put('bob', 48);
-assert.equal(c.toString(), 'adam:29 < john:26 < angela:24 < bob:48');
-
-assert.equal(c.get('adam'), 29);
-assert.equal(c.get('john'), 26);
-assert.equal(c.get('angela'), 24);
-assert.equal(c.get('bob'), 48);
-assert.equal(c.toString(), 'adam:29 < john:26 < angela:24 < bob:48');
-
-assert.equal(c.get('angela'), 24);
-assert.equal(c.toString(), 'adam:29 < john:26 < bob:48 < angela:24');
-
-c.put('ygwie', 81);
-assert.equal(c.toString(), 'john:26 < bob:48 < angela:24 < ygwie:81');
-assert.equal(c.get('adam'), undefined);
-
-c.put('john', 11);
-assert.equal(c.toString(), 'bob:48 < angela:24 < ygwie:81 < john:11');
-assert.equal(c.get('john'), 11);
+// Export ourselves
+if (typeof this === 'object') this.LRUCache = LRUCache;

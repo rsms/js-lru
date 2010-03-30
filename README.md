@@ -76,15 +76,15 @@ returned.
 
 > **Note:** The entry returned is *managed by the cache* (until purged) and thus contains members with strong references which might be altered at any time by the cache object. You should look at the returned entry as being immutable.
 
-### *LRUCache.prototype*.unshift () -> Object entry
+### *LRUCache.prototype*.shift () -> Object entry
 
 Remove the least recently used (oldest) entry. Returns the removed entry, or `undefined` if the cache was empty.
 
 If you need to perform any form of finalization of purged items, this is a good place to do it. Simply override/replace this function:
 
     var c = new LRUCache(123);
-    c.unshift = function() {
-      var entry = LRUCache.prototype.unshift.call(this);
+    c.shift = function() {
+      var entry = LRUCache.prototype.shift.call(this);
       doSomethingWith(entry);
       return entry;
     }
@@ -142,7 +142,7 @@ As this code is most suitable for embedding, here is a shortlist of the essentia
 
 - **LRUCache** -- the constructor is naturally a good thing to keep ;)
 - *LRUCache.prototype*.**put** -- handles appending and chaining.
-- *LRUCache.prototype*.**unshift** -- used by **put** to "purge" an old entry.
+- *LRUCache.prototype*.**shift** -- used by **put** to "purge" an old entry.
 - *LRUCache.prototype*.**get** -- fetches a cached entry and registers that entry as being recently used.
 - *LRUCache.prototype*.**find** -- used by **get** to find a cached entry.
 

@@ -42,7 +42,7 @@ LRUCache.prototype.put = function(key, value) {
   this.tail = entry;
   if (this.size === this.limit) {
     // we hit the limit -- remove the head
-    return this.unshift();
+    return this.shift();
   } else {
     // increase the size counter
     this.size++;
@@ -57,13 +57,13 @@ LRUCache.prototype.put = function(key, value) {
  * good place to do it. Simply override/replace this function:
  *
  *   var c = new LRUCache(123);
- *   c.unshift = function() {
- *     var entry = LRUCache.prototype.unshift.call(this);
+ *   c.shift = function() {
+ *     var entry = LRUCache.prototype.shift.call(this);
  *     doSomethingWith(entry);
  *     return entry;
  *   }
  */
-LRUCache.prototype.unshift = function() {
+LRUCache.prototype.shift = function() {
   // todo: handle special case when limit == 1
   var entry = this.head;
   this.head = this.head.newer;

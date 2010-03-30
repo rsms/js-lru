@@ -43,19 +43,19 @@ Fancy ASCII art illustration of the general design:
 
 An entry is a simple `Object` with at least two members: `{key:Object, value:Object}`. An entry might also have a `newer` member which points to a newer entry, and/or a `older` member pointing to an older entry.
 
-## new LRUCache(Number limit) -> LRUCache instance
+### new LRUCache(Number limit) -> LRUCache instance
 
 Creates a new cache object which will hold up to `limit` entries.
 
-## *LRUCache.prototype*.size -> Number
+### *LRUCache.prototype*.size -> Number
 
 Current number of entries. Read-only.
 
-## *LRUCache.prototype*.limit <-> Number
+### *LRUCache.prototype*.limit <-> Number
 
 Maximum number of items this cache will keep.
 
-## *LRUCache.prototype*.put (Object key, Object value) -> Object entry
+### *LRUCache.prototype*.put (Object key, Object value) -> Object entry
 
 Put `value` into the cache associated with `key`.
 
@@ -63,11 +63,11 @@ Put `value` into the cache associated with `key`.
 
 > **Note:** The returned entry does **not** include any (strong) references to other entries (i.e. there is no `older` or `newer` members). This design makes garbage collection predictable.
 
-## *LRUCache.prototype*.get (Object key) -> Object value
+### *LRUCache.prototype*.get (Object key) -> Object value
 
 Retrieve value for, and register recent use of, `key`. Returns the value associated with `key` or `undefined` if not in the cache.
 
-## *LRUCache.prototype*.find (Object key) -> Object entry
+### *LRUCache.prototype*.find (Object key) -> Object entry
 
 Check if `key` is in the cache *without registering recent use*. Feasible if
 you do not want to chage the state of the cache, but only "peek" at it.
@@ -76,7 +76,7 @@ returned.
 
 > **Note:** The entry returned is *managed by the cache* (until purged) and thus contains members with strong references which might be altered at any time by the cache object. You should look at the returned entry as being immutable.
 
-## *LRUCache.prototype*.unshift () -> Object entry
+### *LRUCache.prototype*.unshift () -> Object entry
 
 Remove the least recently used (oldest) entry. Returns the removed entry, or `undefined` if the cache was empty.
 
@@ -91,15 +91,15 @@ If you need to perform any form of finalization of purged items, this is a good 
 
 The returned entry must not include any strong references to other entries. See note in the documentation of `LRUCache.prototype.put (Object key, Object value) -> Object entry`.
 
-## *LRUCache.prototype*.remove (key) -> Object value
+### *LRUCache.prototype*.remove (key) -> Object value
 
 Remove entry `key` from cache and return its value. Returns `undefined` if `key` is not found.
 
-## *LRUCache.prototype*.removeAll () -> LRUCache instance
+### *LRUCache.prototype*.removeAll () -> LRUCache instance
 
 Removes all entries and return itself.
 
-## *LRUCache.prototype*.forEach (fun, [Object context, Boolean desc | true])
+### *LRUCache.prototype*.forEach (fun, [Object context, Boolean desc | true])
 
 Call `fun` for each entry. Starting with the newest entry if `desc` is a true
 value, otherwise starts with the oldest (head) enrty and moves towards the
@@ -118,7 +118,7 @@ Example which prints "key: value" starting with the most recent entry:
     }, true);
 
 
-## *LRUCache.prototype*.toJSON () -> Array representation
+### *LRUCache.prototype*.toJSON () -> Array representation
 
 Returns an array of object (for use by `JSON.stringify`) of the form:
 
@@ -128,7 +128,7 @@ Returns an array of object (for use by `JSON.stringify`) of the form:
       {key:"key3", value:"value3"}
     ]
 
-## *LRUCache.prototype*.toString () -> String representation
+### *LRUCache.prototype*.toString () -> String representation
 
 Returns a string representation in the format:
 

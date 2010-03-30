@@ -1,8 +1,7 @@
 // Test which will run in nodejs
 // $ node test.js
 // (Might work with other CommonJS-compatible environments)
-var sys = require('sys'),
-    assert = require('assert'),
+var assert = require('assert'),
     LRUCache = require('./lru').LRUCache;
 var c = new LRUCache(4);
 
@@ -35,4 +34,4 @@ c.forEach(function(k, v) {
   assert.equal(k, expectedKeys.shift());
 })
 
-sys.puts('all tests passed');
+// If we made it down here, all tests passed. Neat.

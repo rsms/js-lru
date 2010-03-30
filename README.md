@@ -95,6 +95,29 @@ The returned entry must not include any strong references to other entries. See 
 
 Remove entry `key` from cache and return its value. Returns `undefined` if `key` is not found.
 
+## *LRUCache.prototype*.removeAll () -> LRUCache instance
+
+Removes all entries and return itself.
+
+## *LRUCache.prototype*.forEach (fun, [Object context, Boolean desc | true])
+
+Call `fun` for each entry. Starting with the newest entry if `desc` is a true
+value, otherwise starts with the oldest (head) enrty and moves towards the
+tail.
+
+Returns nothing (`undefined`).
+
+`fun` is called with 3 arguments in the context `context`:
+
+    fun.call(context, Object key, Object value, LRUCache self)
+
+Example which prints "key: value" starting with the most recent entry:
+
+    cache.forEach(function(key, value) {
+      puts(key+': '+value);
+    }, true);
+
+
 ## *LRUCache.prototype*.toJSON () -> Array representation
 
 Returns an array of object (for use by `JSON.stringify`) of the form:

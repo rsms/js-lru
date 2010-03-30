@@ -111,7 +111,7 @@ Returns a string representation in the format:
 
     key1:value1 < key2:value2 < key3:value3
 
-    (oldest/head)             (newest/tail)
+Oldest (head) on the left hand side and newer entries to the right hand side.
 
 # MIT license
 

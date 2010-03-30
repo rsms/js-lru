@@ -15,7 +15,7 @@ This implementation is compatible with most JavaScript environments (including y
   an "older" entry (doubly-linked, "older" being close to "head" and "newer"
   being closer to "tail").
 
-The flow of appending and purgin can be illustrated as follows:
+Fancy ASCII art illustration of the general design:
 
         entry             entry             entry             entry        
         ______            ______            ______            ______       
@@ -57,9 +57,9 @@ Maximum number of items this cache will keep.
 
 ## LRUCache.prototype.put (Object key, Object value) -> Object entry
 
-Put `value` into the cache associated with `key`. Returns *the entry which was
-removed* to make room for the new entry. Otherwise `undefined` is returned
-(i.e. if there was enough room already).
+Put `value` into the cache associated with `key`.
+
+**Returns an entry which was removed** (to make room for the new entry) or  `undefined` if there was enough space for the new entry.
 
 > **Note:** The returned entry does **not** include any (strong) references to other entries (i.e. there is no `older` or `newer` members). This design makes garbage collection predictable.
 

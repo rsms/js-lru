@@ -1,0 +1,137 @@
+
+  N = 100000
+
+----------
+  function (){
+    // 1. put
+    //    Simply append a new entry.
+    //    There will be no reordering since we simply append to the tail.
+    for (var i=N; --i;)
+      c.put('key'+i, i);
+  }
+   rss:        +32,384 kB -- (6,472 kB -> 38,856 kB)
+   vsize:      +24,168 kB -- (3,040,680 kB -> 3,064,848 kB)
+   heap total: +38,225 kB -- (3,813 kB -> 42,037 kB)
+   heap used:  +26,346 kB -- (1,584 kB -> 27,930 kB)
+
+  -- 205ms --
+
+
+----------
+  function (){
+    // 2. get recent -> old
+    //    Get entries starting with newest, effectively reversing the list.
+    //
+    // a. For each get, a find is first executed implemented as a native object with
+    //    keys mapping to entries, so this should be reasonably fast as most native
+    //    objects are implemented as hash maps.
+    //
+    // b. For each get, the aquired item will be moved to tail which includes a
+    //    maximum of 7 assignment operations (minimum 3).
+    for (var i=1,L=N+1; i<L; ++i)
+      c.get('key'+i, i);
+  }
+   rss:        +2,900 kB -- (36,596 kB -> 39,496 kB)
+   vsize:      +0 kB -- (3,063,280 kB -> 3,063,280 kB)
+   heap total: +0 kB -- (39,669 kB -> 39,669 kB)
+   heap used:  +4,312 kB -- (24,747 kB -> 29,059 kB)
+
+  -- 60ms --
+
+
+----------
+  function (){
+    // 3. get old -> recent
+    //    Get entries starting with oldest, effectively reversing the list.
+    //
+    //  - Same conditions apply as for test 2.
+    for (var i=1,L=N+1; i<L; ++i)
+      c.get('key'+i);
+  }
+   rss:        +3,632 kB -- (39,504 kB -> 43,136 kB)
+   vsize:      +2,332 kB -- (3,063,280 kB -> 3,065,612 kB)
+   heap total: +2,190 kB -- (39,669 kB -> 41,860 kB)
+   heap used:  -792 kB -- (29,073 kB -> 28,281 kB)
+
+  -- 88ms --
+
+
+----------
+  function (){
+    // 4. get missing
+    //    Get try to get entries not in the cache.
+    //  - Same conditions apply as for test 2, section a.
+    for (var i=1,L=N+1; i<L; ++i)
+      c.get('xkey'+i);
+  }
+   rss:        +3,356 kB -- (43,140 kB -> 46,496 kB)
+   vsize:      +0 kB -- (3,065,612 kB -> 3,065,612 kB)
+   heap total: +16,384 kB -- (41,860 kB -> 58,244 kB)
+   heap used:  -2,369 kB -- (28,289 kB -> 25,920 kB)
+
+  -- 63ms --
+
+
+----------
+  function (){
+    // 5. put overflow
+    //    Overflow the cache with N more items than it can hold.
+    // a. The complexity of put in this case should be:
+    //    ( <get whith enough space> + <shift> )
+    for (var i=N; --i;)
+      c.put('key2_'+i, i);
+  }
+   rss:        +6,224 kB -- (46,496 kB -> 52,720 kB)
+   vsize:      +0 kB -- (3,065,612 kB -> 3,065,612 kB)
+   heap total: +0 kB -- (58,244 kB -> 58,244 kB)
+   heap used:  +12,893 kB -- (25,927 kB -> 38,820 kB)
+
+  -- 146ms --
+
+
+----------
+  function (){
+    // 6. shift head -> tail
+    //    Remove all entries going from head to tail
+    for (var i=1,L=N+1; i<L; ++i)
+      c.shift();
+  }
+   rss:        +0 kB -- (52,724 kB -> 52,724 kB)
+   vsize:      +0 kB -- (3,065,612 kB -> 3,065,612 kB)
+   heap total: +0 kB -- (58,244 kB -> 58,244 kB)
+   heap used:  +0 kB -- (38,826 kB -> 38,827 kB)
+
+  -- 36ms --
+
+
+----------
+  function (){
+    // 7. put 
+    //    Simply put N new items into an empty cache with exactly N space.
+    for (var i=N; --i;)
+      c.put('key'+i, i);
+  }
+   rss:        +6,280 kB -- (52,728 kB -> 59,008 kB)
+   vsize:      +0 kB -- (3,065,612 kB -> 3,065,612 kB)
+   heap total: +0 kB -- (58,244 kB -> 58,244 kB)
+   heap used:  -1,906 kB -- (38,832 kB -> 36,926 kB)
+
+  -- 104ms --
+
+
+----------
+  function (){
+    // 8. remove random
+    // a. Most operations (which are not entries at head or tail) will cause closes
+    //    siblings to be relinked.
+    for (var i=shuffledKeys.length, key; key = shuffledKeys[--i]; ) {
+      c.remove('key'+i, i);
+    }
+  }
+   rss:        +4 kB -- (70,056 kB -> 70,060 kB)
+   vsize:      +0 kB -- (3,072,812 kB -> 3,072,812 kB)
+   heap total: +0 kB -- (65,050 kB -> 65,050 kB)
+   heap used:  -11,301 kB -- (40,337 kB -> 29,036 kB)
+
+  -- 93ms --
+

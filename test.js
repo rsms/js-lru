@@ -24,7 +24,7 @@ c.put('ygwie', 81);
 assert.equal(c.toString(), 'john:26 < bob:48 < angela:24 < ygwie:81');
 assert.equal(c.get('adam'), undefined);
 
-c.put('john', 11);
+c.set('john', 11);
 assert.equal(c.toString(), 'bob:48 < angela:24 < ygwie:81 < john:11');
 assert.equal(c.get('john'), 11);
 

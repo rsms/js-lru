@@ -2,7 +2,7 @@
 
 A finite key-value cache using the [Least Recently Used (LRU)](http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used) cache algorithm where the most recently used objects are keept in cache while less recently used items are purged.
 
-This implementation is compatible with most JavaScript environments (including ye olde browser).
+This implementation is compatible with most JavaScript environments (including ye olde browser) and is very efficient.
 
 ## Terminology & design
 
@@ -14,6 +14,10 @@ This implementation is compatible with most JavaScript environments (including y
 - The "head" and "tail" are "entries" -- an entry might have a "newer" and
   an "older" entry (doubly-linked, "older" being close to "head" and "newer"
   being closer to "tail").
+
+- Key lookup is done by aid from a key-entry map based on a native object, which
+  in most cases means `O(1)` complexity. This comes at a very low memory cost 
+  (for storing two extra pointers for each entry).
 
 Fancy ASCII art illustration of the general design:
 
@@ -91,6 +95,10 @@ If you need to perform any form of finalization of purged items, this is a good 
 
 The returned entry must not include any strong references to other entries. See note in the documentation of `LRUCache.prototype.put (Object key, Object value) -> Object entry`.
 
+### *LRUCache.prototype*.set (key, value) -> Object oldValue
+
+Update the value of entry with `key`. Returns the old value, or undefined if entry was not in the cache.
+
 ### *LRUCache.prototype*.remove (key) -> Object value
 
 Remove entry `key` from cache and return its value. Returns `undefined` if `key` is not found.
@@ -98,6 +106,10 @@ Remove entry `key` from cache and return its value. Returns `undefined` if `key`
 ### *LRUCache.prototype*.removeAll () -> LRUCache instance
 
 Removes all entries and return itself.
+
+### *LRUCache.prototype*.keys () -> Array keys
+
+Return an array containing all keys of entries in arbitrary order.
 
 ### *LRUCache.prototype*.forEach (fun, [Object context, Boolean desc | true])
 
@@ -144,7 +156,6 @@ As this code is most suitable for embedding, here is a shortlist of the essentia
 - *LRUCache.prototype*.**put** -- handles appending and chaining.
 - *LRUCache.prototype*.**shift** -- used by **put** to "purge" an old entry.
 - *LRUCache.prototype*.**get** -- fetches a cached entry and registers that entry as being recently used.
-- *LRUCache.prototype*.**find** -- used by **get** to find a cached entry.
 
 The border between "required" and "optional" code is marked in `lru.js` by a comment starting with `// Following code is optional`...
 

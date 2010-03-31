@@ -15,9 +15,9 @@ This implementation is compatible with most JavaScript environments (including y
   an "older" entry (doubly-linked, "older" being close to "head" and "newer"
   being closer to "tail").
 
-- Key lookup is done by aid from a key-entry map based on a native object, which
-  in most cases means `O(1)` complexity. This comes at a very low memory cost 
-  (for storing two extra pointers for each entry).
+- Key lookup is done through a key-entry mapping native object, which on most 
+  platforms mean `O(1)` complexity. This comes at a very low memory cost  (for 
+  storing two extra pointers for each entry).
 
 Fancy ASCII art illustration of the general design:
 

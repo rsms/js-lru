@@ -135,12 +135,15 @@ LRUCache.prototype.find = function(key) {
  * entry was not in the cache.
  */
 LRUCache.prototype.set = function(key, value) {
-  var entry = this.get(key, true);
+  var oldvalue, entry = this.get(key, true);
   if (entry) {
-    var oldvalue = entry.value;
+    oldvalue = entry.value;
     entry.value = value;
-    return oldvalue;
+  } else {
+    oldvalue = this.put(key, value);
+    if (oldvalue) oldvalue = oldvalue.value;
   }
+  return oldvalue;
 }
 
 /**

@@ -97,7 +97,7 @@ The returned entry must not include any strong references to other entries. See 
 
 ### *LRUCache.prototype*.set (key, value) -> Object oldValue
 
-Update the value of entry with `key`. Returns the old value, or undefined if entry was not in the cache.
+Update the value of entry with `key` or `put` a new entry. Returns the old value, or undefined if the cache was empty.
 
 ### *LRUCache.prototype*.remove (key) -> Object value
 

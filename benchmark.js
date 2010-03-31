@@ -48,7 +48,7 @@ function measure(enough, block) {
 }
 
 // Create a cache with N entries
-var N = 1000000;
+var N = 100000;
 var c = new LRUCache(N);
 
 // We should probably spin up the system in some way, or repeat the benchmarks a
@@ -120,7 +120,7 @@ measure(function(){
 
 // pre-build random key array
 var shuffledKeys = c.keys();
-shuffledKeys.sort(function (){return (Math.round(Math.random())-0.5); });
+shuffledKeys.sort(function (){return Math.random()-0.5; });
 
 measure(function(){
   // 8. remove random

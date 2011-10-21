@@ -169,6 +169,7 @@ LRUCache.prototype.remove = function(key) {
     // link the newer entry to head
     this.tail = entry.older;
   }
+  this.size--;
   return entry.value;
 }
 

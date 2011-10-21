@@ -34,4 +34,7 @@ c.forEach(function(k, v) {
   assert.equal(k, expectedKeys.shift());
 })
 
+var current_size = c.size;
+c.remove('john');
+assert.equal(current_size - 1, c.size);
 // If we made it down here, all tests passed. Neat.

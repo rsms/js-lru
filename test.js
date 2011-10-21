@@ -37,4 +37,14 @@ c.forEach(function(k, v) {
 var current_size = c.size;
 c.remove('john');
 assert.equal(current_size - 1, c.size);
+
+//test remove
+var to_remove = new LRUCache(4);
+to_remove.put('adam', 29);
+to_remove.put('john', 26);
+to_remove.remove('adam');
+to_remove.remove('john');
+assert.equal(to_remove.size, 0);
+assert.equal(to_remove.head, undefined);
+assert.equal(to_remove.tail, undefined);
 // If we made it down here, all tests passed. Neat.

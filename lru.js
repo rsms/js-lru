@@ -168,7 +168,10 @@ LRUCache.prototype.remove = function(key) {
     entry.older.newer = undefined;
     // link the newer entry to head
     this.tail = entry.older;
+  } else if(entry.older === undefined && entry.newer === undefined) {
+    this.head = this.tail = undefined;
   }
+
   this.size--;
   return entry.value;
 }

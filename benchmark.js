@@ -33,18 +33,19 @@ function measure(enough, block) {
     usec = (new Date() - start) * 1000;
   }
   var em = process.memoryUsage();
-  var mrssd = em.rss-sm.rss, mvsized = em.vsize-sm.vsize,
-      mhtotd = em.heapTotal-sm.heapTotal, mhusedd = em.heapUsed-sm.heapUsed;
-  sys.puts('\n----------\n  '+
-    block.toString().replace(/\n/g, "\n  ")+'\n'+
-    //' memory:\n'+
-    '   rss:        '+mrssd.toSignedHuman(1024)+' kB -- ('+sm.rss.toHuman(1024)+' kB -> '+em.rss.toHuman(1024)+' kB)\n'+
-    '   vsize:      '+mvsized.toSignedHuman(1024)+' kB -- ('+sm.vsize.toHuman(1024)+' kB -> '+em.vsize.toHuman(1024)+' kB)\n'+
-    '   heap total: '+mhtotd.toSignedHuman(1024)+' kB -- ('+sm.heapTotal.toHuman(1024)+' kB -> '+em.heapTotal.toHuman(1024)+' kB)\n'+
-    '   heap used:  '+mhusedd.toSignedHuman(1024)+' kB -- ('+sm.heapUsed.toHuman(1024)+' kB -> '+em.heapUsed.toHuman(1024)+' kB)\n'+
-    
-    '\n  -- '+(usec/1000)+'ms'+(n ? ' ('+n+' repetitions)':'')+' --\n'
-  );
+  var mrssd = em.rss - sm.rss;
+  var mhtotd = em.heapTotal - sm.heapTotal;
+  var mhusedd = em.heapUsed - sm.heapUsed;
+  var msg = '\n----------\n  ' + block.toString().replace(/\n/g, "\n  ") + '\n' +
+    '   rss:        ' + mrssd.toSignedHuman(1024) + ' kB -- (' + sm.rss.toHuman(1024) + ' kB -> ' + em.rss.toHuman(1024) + ' kB)\n';
+  if (typeof sm.vsize === 'number') {
+    var mvsized = em.vsize - sm.vsize;
+    msg += '   vsize:      ' + mvsized.toSignedHuman(1024) + ' kB -- (' + sm.vsize.toHuman(1024) + ' kB -> ' + em.vsize.toHuman(1024) + ' kB)\n';
+  }
+  msg += '   heap total: ' + mhtotd.toSignedHuman(1024) + ' kB -- (' + sm.heapTotal.toHuman(1024) + ' kB -> ' + em.heapTotal.toHuman(1024) + ' kB)\n' +
+    '   heap used:  ' + mhusedd.toSignedHuman(1024) + ' kB -- (' + sm.heapUsed.toHuman(1024) + ' kB -> ' + em.heapUsed.toHuman(1024) + ' kB)\n' +
+    '\n  -- ' + (usec / 1000) + 'ms' + (n ? ' (' + n + ' repetitions)' : '') + ' --\n';
+  sys.puts(msg);
 }
 
 // Create a cache with N entries

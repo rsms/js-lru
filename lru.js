@@ -50,7 +50,7 @@ LRUCache.prototype.put = function(key, value) {
     // increase the size counter
     this.size++;
   }
-}
+};
 
 /**
  * Purge the least recently used (oldest) entry from the cache. Returns the
@@ -83,7 +83,7 @@ LRUCache.prototype.shift = function() {
     delete this._keymap[entry.key];
   }
   return entry;
-}
+};
 
 /**
  * Get and register recent use of <key>. Returns the value associated with <key>
@@ -115,7 +115,7 @@ LRUCache.prototype.get = function(key, returnEntry) {
     this.tail.newer = entry; // E. <-- D
   this.tail = entry;
   return returnEntry ? entry : entry.value;
-}
+};
 
 // ----------------------------------------------------------------------------
 // Following code is optional and can be removed without breaking the core
@@ -128,7 +128,7 @@ LRUCache.prototype.get = function(key, returnEntry) {
  */
 LRUCache.prototype.find = function(key) {
   return this._keymap[key];
-}
+};
 
 /**
  * Update the value of entry with <key>. Returns the old value, or undefined if
@@ -144,7 +144,7 @@ LRUCache.prototype.set = function(key, value) {
     if (oldvalue) oldvalue = oldvalue.value;
   }
   return oldvalue;
-}
+};
 
 /**
  * Remove entry <key> from cache and return its value. Returns undefined if not
@@ -174,7 +174,7 @@ LRUCache.prototype.remove = function(key) {
 
   this.size--;
   return entry.value;
-}
+};
 
 /** Removes all entries */
 LRUCache.prototype.removeAll = function() {
@@ -182,20 +182,20 @@ LRUCache.prototype.removeAll = function() {
   this.head = this.tail = undefined;
   this.size = 0;
   this._keymap = {};
-}
+};
 
 /**
  * Return an array containing all keys of entries stored in the cache object, in
  * arbitrary order.
  */
 if (typeof Object.keys === 'function') {
-  LRUCache.prototype.keys = function() { return Object.keys(this._keymap); }
+  LRUCache.prototype.keys = function() { return Object.keys(this._keymap); };
 } else {
   LRUCache.prototype.keys = function() {
     var keys = [];
     for (var k in this._keymap) keys.push(k);
     return keys;
-  }
+  };
 }
 
 /**
@@ -207,22 +207,23 @@ if (typeof Object.keys === 'function') {
  *   `fun.call(context, Object key, Object value, LRUCache self)`
  */
 LRUCache.prototype.forEach = function(fun, context, desc) {
+  var entry;
   if (context === true) { desc = true; context = undefined; }
   else if (typeof context !== 'object') context = this;
   if (desc) {
-    var entry = this.tail;
+    entry = this.tail;
     while (entry) {
       fun.call(context, entry.key, entry.value, this);
       entry = entry.older;
     }
   } else {
-    var entry = this.head;
+    entry = this.head;
     while (entry) {
       fun.call(context, entry.key, entry.value, this);
       entry = entry.newer;
     }
   }
-}
+};
 
 /** Returns a JSON (array) representation */
 LRUCache.prototype.toJSON = function() {
@@ -232,18 +233,19 @@ LRUCache.prototype.toJSON = function() {
     entry = entry.newer;
   }
   return s;
-}
+};
 
 /** Returns a String representation */
 LRUCache.prototype.toString = function() {
   var s = '', entry = this.head;
   while (entry) {
     s += String(entry.key)+':'+entry.value;
-    if (entry = entry.newer)
+    entry = entry.newer;
+    if (entry)
       s += ' < ';
   }
   return s;
-}
+};
 
 // Export ourselves
 if (typeof this === 'object') this.LRUCache = LRUCache;

@@ -47,4 +47,25 @@ to_remove.remove('john');
 assert.equal(to_remove.size, 0);
 assert.equal(to_remove.head, undefined);
 assert.equal(to_remove.tail, undefined);
+
+
+//test shift
+var s = new LRUCache(4);
+assert.equal(s.size, 0);
+s.put('a', 1)
+s.put('b', 2)
+s.put('c', 3)
+assert.equal(s.size, 3);
+var c = s.shift();
+assert(c.key, 'a');
+assert(c.value, 1);
+c = s.shift();
+assert(c.key, 'b');
+assert(c.value, 2);
+c = s.shift();
+assert(c.key, 'c');
+assert(c.value, 3);
+s.forEach(function () { assert(false); }, true);
+assert.equal(s.size, 0);
+
 // If we made it down here, all tests passed. Neat.

@@ -67,21 +67,34 @@ LRUCache.prototype.put = function(key, value) {
  *   }
  */
 LRUCache.prototype.shift = function() {
-  // todo: handle special case when limit == 1
-  var entry = this.head;
-  if (entry) {
-    if (this.head.newer) {
-      this.head = this.head.newer;
-      this.head.older = undefined;
-    } else {
-      this.head = undefined;
-    }
-    // Remove last strong reference to <entry> and remove links from the purged
-    // entry being returned:
-    entry.newer = entry.older = undefined;
-    // delete is slow, but we need to do this to avoid uncontrollable growth:
-    delete this._keymap[entry.key];
+  return this.remove_entry(this.head);
+};
+
+/**
+ * Remove an entry from the list.  Update everything accordingly.
+ */
+LRUCache.prototype.remove_entry = function(entry) {
+  if (entry === void 0) return void 0;
+  delete this._keymap[entry.key]; // need to do delete unfortunately
+  if (entry.newer && entry.older) {
+    // relink the older entry with the newer entry
+    entry.older.newer = entry.newer;
+    entry.newer.older = entry.older;
+  } else if (entry.newer) {
+    // remove the link to us
+    entry.newer.older = void 0;
+    // link the newer entry to head
+    this.head = entry.newer;
+  } else if (entry.older) {
+    // remove the link to us
+    entry.older.newer = void 0;
+    // link the newer entry to head
+    this.tail = entry.older;
+  } else {// if(entry.older === void 0 && entry.newer === void 0) {
+    this.head = this.tail = void 0;
   }
+
+  this.size--;
   return entry;
 };
 
@@ -92,7 +105,7 @@ LRUCache.prototype.shift = function() {
 LRUCache.prototype.get = function(key, returnEntry) {
   // First, find our cache entry
   var entry = this._keymap[key];
-  if (entry === undefined) return; // Not cached. Sorry.
+  if (entry === void 0) return; // Not cached. Sorry.
   // As <key> was found in the cache, register it as being requested recently
   if (entry === this.tail) {
     // Already the most recenlty used entry, so no need to update the list
@@ -109,7 +122,7 @@ LRUCache.prototype.get = function(key, returnEntry) {
   }
   if (entry.older)
     entry.older.newer = entry.newer; // C. --> E
-  entry.newer = undefined; // D --x
+  entry.newer = void 0; // D --x
   entry.older = this.tail; // D. --> E
   if (this.tail)
     this.tail.newer = entry; // E. <-- D
@@ -151,35 +164,20 @@ LRUCache.prototype.set = function(key, value) {
  * found.
  */
 LRUCache.prototype.remove = function(key) {
-  var entry = this._keymap[key];
-  if (!entry) return;
-  delete this._keymap[entry.key]; // need to do delete unfortunately
-  if (entry.newer && entry.older) {
-    // relink the older entry with the newer entry
-    entry.older.newer = entry.newer;
-    entry.newer.older = entry.older;
-  } else if (entry.newer) {
-    // remove the link to us
-    entry.newer.older = undefined;
-    // link the newer entry to head
-    this.head = entry.newer;
-  } else if (entry.older) {
-    // remove the link to us
-    entry.older.newer = undefined;
-    // link the newer entry to head
-    this.tail = entry.older;
-  } else {// if(entry.older === undefined && entry.newer === undefined) {
-    this.head = this.tail = undefined;
-  }
-
-  this.size--;
-  return entry.value;
+  return this.entry_value(this.remove_entry(this._keymap[key]));
 };
+
+/**
+ * Return the value of an entry, undefined if entry is undefined
+ */
+LRUCache.prototype.entry_value = function(entry) {
+  return entry ? entry.value : void 0;
+}
 
 /** Removes all entries */
 LRUCache.prototype.removeAll = function() {
   // This should be safe, as we never expose strong refrences to the outside
-  this.head = this.tail = undefined;
+  this.head = this.tail = void 0;
   this.size = 0;
   this._keymap = {};
 };
@@ -208,7 +206,7 @@ if (typeof Object.keys === 'function') {
  */
 LRUCache.prototype.forEach = function(fun, context, desc) {
   var entry;
-  if (context === true) { desc = true; context = undefined; }
+  if (context === true) { desc = true; context = void 0; }
   else if (typeof context !== 'object') context = this;
   if (desc) {
     entry = this.tail;

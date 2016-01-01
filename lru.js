@@ -105,7 +105,7 @@ LRUCache.prototype.remove_entry = function(entry) {
 LRUCache.prototype.get = function(key, returnEntry) {
   // First, find our cache entry
   var entry = this._keymap[key];
-  if (entry === undefined) return; // Not cached. Sorry.
+  if (entry === void 0) return; // Not cached. Sorry.
   // As <key> was found in the cache, register it as being requested recently
   if (entry === this.tail) {
     // Already the most recenlty used entry, so no need to update the list
@@ -122,7 +122,7 @@ LRUCache.prototype.get = function(key, returnEntry) {
   }
   if (entry.older)
     entry.older.newer = entry.newer; // C. --> E
-  entry.newer = undefined; // D --x
+  entry.newer = void 0; // D --x
   entry.older = this.tail; // D. --> E
   if (this.tail)
     this.tail.newer = entry; // E. <-- D
@@ -177,7 +177,7 @@ LRUCache.prototype.entry_value = function(entry) {
 /** Removes all entries */
 LRUCache.prototype.removeAll = function() {
   // This should be safe, as we never expose strong refrences to the outside
-  this.head = this.tail = undefined;
+  this.head = this.tail = void 0;
   this.size = 0;
   this._keymap = {};
 };
@@ -206,7 +206,7 @@ if (typeof Object.keys === 'function') {
  */
 LRUCache.prototype.forEach = function(fun, context, desc) {
   var entry;
-  if (context === true) { desc = true; context = undefined; }
+  if (context === true) { desc = true; context = void 0; }
   else if (typeof context !== 'object') context = this;
   if (desc) {
     entry = this.tail;

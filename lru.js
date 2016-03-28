@@ -71,16 +71,20 @@ LRUCache.prototype.shift = function() {
   var entry = this.head;
   if (entry) {
     if (this.head.newer) {
+      // advance the list
       this.head = this.head.newer;
       this.head.older = undefined;
     } else {
+      // the cache is exhausted
       this.head = undefined;
+      this.tail = undefined;
     }
     // Remove last strong reference to <entry> and remove links from the purged
     // entry being returned:
     entry.newer = entry.older = undefined;
     // delete is slow, but we need to do this to avoid uncontrollable growth:
     delete this._keymap[entry.key];
+    this.size--;
   }
   return entry;
 };

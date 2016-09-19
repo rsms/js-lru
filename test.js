@@ -47,4 +47,38 @@ to_remove.remove('john');
 assert.equal(to_remove.size, 0);
 assert.equal(to_remove.head, undefined);
 assert.equal(to_remove.tail, undefined);
+
+//test shift
+var s = new LRUCache(4);
+assert.equal(s.size, 0);
+s.put('a', 1)
+s.put('b', 2)
+s.put('c', 3)
+assert.equal(s.size, 3);
+var c = s.shift();
+assert(c.key, 'a');
+assert(c.value, 1);
+c = s.shift();
+assert(c.key, 'b');
+assert(c.value, 2);
+c = s.shift();
+assert(c.key, 'c');
+assert(c.value, 3);
+s.forEach(function () { assert(false); }, true);
+assert.equal(s.size, 0);
+
+var c = new LRUCache(4);
+
+c.put(0,1);
+c.put(0,2);
+c.put(0,3);
+c.put(0,4);
+
+assert.equal(c.size, 4);
+assert.deepEqual(c.shift(), {key:0, value:1, newer: undefined, older: undefined });
+assert.deepEqual(c.shift(), {key:0, value:2, newer: undefined, older: undefined });
+assert.deepEqual(c.shift(), {key:0, value:3, newer: undefined, older: undefined });
+assert.deepEqual(c.shift(), {key:0, value:4, newer: undefined, older: undefined });
+assert.equal(c.size, 0); // check .size correct
+c.forEach(function(){assert(false)}, undefined, true);  // check .tail correct
 // If we made it down here, all tests passed. Neat.

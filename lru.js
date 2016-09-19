@@ -95,7 +95,7 @@ LRUCache.prototype.get = function(key, returnEntry) {
   if (entry === undefined) return; // Not cached. Sorry.
   // As <key> was found in the cache, register it as being requested recently
   if (entry === this.tail) {
-    // Already the most recenlty used entry, so no need to update the list
+    // Already the most recently used entry, so no need to update the list.
     return returnEntry ? entry : entry.value;
   }
   // HEAD--------------TAIL

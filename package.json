@@ -1,0 +1,24 @@
+{
+  "name": "lru-fast",
+  "version": "0.1.0",
+  "description": "finite key-value cache using the Least Recently Used (LRU) algorithm where the most recently used objects are keept in cache while less recently used items are purged",
+  "main": "lru.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rsms/js-lru.git"
+  },
+  "keywords": [
+    "cache",
+    "lru",
+    "buffer"
+  ],
+  "author": "Rasmus Andersson <me@rsms.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rsms/js-lru/issues"
+  },
+  "homepage": "https://github.com/rsms/js-lru#readme"
+}

@@ -182,7 +182,7 @@ LRUCache.prototype.remove = function(key) {
 
 /** Removes all entries */
 LRUCache.prototype.removeAll = function() {
-  // This should be safe, as we never expose strong refrences to the outside
+  // This should be safe, as we never expose strong references to the outside.
   this.head = this.tail = undefined;
   this.size = 0;
   this._keymap = {};

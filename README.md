@@ -43,6 +43,12 @@ Fancy ASCII art illustration of the general design:
     // Because we only have room for 3 entries, put-ing 'zorro' purged 'adam'
     c.toString();        // -> "angela:24 < john:26 < zorro:141"
 
+# Usage
+
+Just copy the code on lru.js — for minimal functionality, you only need the lines up until the comment that says "Following code is optional".
+
+If you're really into package managers and love having lots of complicated little files in your project, you can use `npm install lru-fast`
+
 # API
 
 An entry is a simple `Object` with at least two members: `{key:Object, value:Object}`. An entry might also have a `newer` member which points to a newer entry, and/or a `older` member pointing to an older entry.

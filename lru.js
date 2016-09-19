@@ -200,7 +200,7 @@ if (typeof Object.keys === 'function') {
 
 /**
  * Call `fun` for each entry. Starting with the newest entry if `desc` is a true
- * value, otherwise starts with the oldest (head) enrty and moves towards the
+ * value, otherwise starts with the oldest (head) entry and moves towards the
  * tail.
  *
  * `fun` is called with 3 arguments in the context `context`:

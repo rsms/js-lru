@@ -31,7 +31,7 @@ function LRUCache (limit) {
  */
 LRUCache.prototype.put = function(key, value) {
   var entry = {key:key, value:value};
-  // Note: No protection agains replacing, and thus orphan entries. By design.
+  // Note: No protection against replacing, and thus orphan entries. By design.
   this._keymap[key] = entry;
   if (this.tail) {
     // link previous tail to the new tail (entry)

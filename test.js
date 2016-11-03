@@ -10,6 +10,7 @@ c.put('john', 26);
 c.put('angela', 24);
 c.put('bob', 48);
 assert.equal(c.toString(), 'adam:29 < john:26 < angela:24 < bob:48');
+assert.equal(c.size, 4);
 
 assert.equal(c.get('adam'), 29);
 assert.equal(c.get('john'), 26);
@@ -22,6 +23,7 @@ assert.equal(c.toString(), 'adam:29 < john:26 < bob:48 < angela:24');
 
 c.put('ygwie', 81);
 assert.equal(c.toString(), 'john:26 < bob:48 < angela:24 < ygwie:81');
+assert.equal(c.size, 4);
 assert.equal(c.get('adam'), undefined);
 
 c.set('john', 11);

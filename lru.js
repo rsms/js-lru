@@ -43,12 +43,10 @@ LRUCache.prototype.put = function(key, value) {
   }
   // add new entry to the end of the linked list -- it's now the freshest entry.
   this.tail = entry;
-  if (this.size === this.limit) {
+  this.size++;
+  if (this.size > this.limit) {
     // we hit the limit -- remove the head
     return this.shift();
-  } else {
-    // increase the size counter
-    this.size++;
   }
 };
 

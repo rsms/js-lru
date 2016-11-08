@@ -1,21 +1,21 @@
-interface Entry<K,V> {
-  older :Entry<K,V>;
-  newer :Entry<K,V>;
+interface LRUCAcheEntry<K,V> {
+  older :LRUCAcheEntry<K,V>;
+  newer :LRUCAcheEntry<K,V>;
   key   :K;
   value :V;
 }
 
-export class LRUCache<K,V> {
+export class LRUCacheStatíc<K,V> {
   constructor(limit :number);
 
   // Put <value> into the cache associated with <key>.
   // Returns the entry which was removed to make room for the new entry. Otherwise
   // undefined is returned (i.e. if there was enough room already).
-  put(key :K, value :V) : Entry<K,V> | undefined;
+  put(key :K, value :V) : LRUCAcheEntry<K,V> | undefined;
 
   // Purge the least recently used (oldest) entry from the cache.
   // Returns the removed entry or undefined if the cache was empty.
-  shift() : Entry<K,V> | undefined;
+  shift() : LRUCAcheEntry<K,V> | undefined;
 
   // Get and register recent use of <key>.
   // Returns the value associated with <key> or undefined if not in cache.
@@ -45,7 +45,7 @@ export class LRUCache<K,V> {
   // value, otherwise starts with the oldest (head) enrty and moves towards the tail.
   // context, Object key, Object value, LRUCache self
   forEach(
-    fun :(context :any, key :K, value :V, self :LRUCache<K,V>)=>void,
+    fun :(context :any, key :K, value :V, self :LRUCacheStatic<K,V>)=>void,
     context? :any,
     desc? :boolean
   ) : void;
@@ -56,3 +56,11 @@ export class LRUCache<K,V> {
   // Returns a human-readable text representation
   toString() : string;
 }
+
+
+
+declare module "lru-fast" {
+    export = LRUCache;
+}
+
+declare var LRUCache: LRUCacheStatíc;

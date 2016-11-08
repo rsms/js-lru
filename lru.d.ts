@@ -1,21 +1,21 @@
-interface LRUCAcheEntry<K,V> {
-  older :LRUCAcheEntry<K,V>;
-  newer :LRUCAcheEntry<K,V>;
+interface LRUCacheEntry<K,V> {
+  older :LRUCacheEntry<K,V>;
+  newer :LRUCacheEntry<K,V>;
   key   :K;
   value :V;
 }
 
-export class LRUCacheStatíc<K,V> {
-  constructor(limit :number);
+interface LRUCacheStatic<K,V> {
+  new<K,V>(limit :number): LRUCacheStatic<K,V>;
 
   // Put <value> into the cache associated with <key>.
   // Returns the entry which was removed to make room for the new entry. Otherwise
   // undefined is returned (i.e. if there was enough room already).
-  put(key :K, value :V) : LRUCAcheEntry<K,V> | undefined;
+  put(key :K, value :V) : LRUCacheStatic<K,V> | undefined;
 
   // Purge the least recently used (oldest) entry from the cache.
   // Returns the removed entry or undefined if the cache was empty.
-  shift() : LRUCAcheEntry<K,V> | undefined;
+  shift() : LRUCacheEntry<K,V> | undefined;
 
   // Get and register recent use of <key>.
   // Returns the value associated with <key> or undefined if not in cache.
@@ -57,10 +57,7 @@ export class LRUCacheStatíc<K,V> {
   toString() : string;
 }
 
-
-
 declare module "lru-fast" {
-    export = LRUCache;
+  export = LRUCache;
 }
-
-declare var LRUCache: LRUCacheStatíc;
+declare var LRUCache: LRUCacheStatic<any,any>;

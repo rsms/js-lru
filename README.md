@@ -35,23 +35,27 @@ least-recently used                                            most-recently use
 
 ## Example
 
-    var c = new LRUCache(3);
-    c.put('adam', 29);
-    c.put('john', 26);
-    c.put('angela', 24);
-    c.toString();        // -> "adam:29 < john:26 < angela:24"
-    c.get('john');       // -> 26
-    // Now 'john' is the most recently used entry, since we just requested it
-    c.toString();        // -> "adam:29 < angela:24 < john:26"
-    c.put('zorro', 141); // -> {key:adam, value:29}
-    // Because we only have room for 3 entries, put-ing 'zorro' purged 'adam'
-    c.toString();        // -> "angela:24 < john:26 < zorro:141"
+```js
+let c = new LRUCache(3)
+c.put('adam',   29)
+c.put('john',   26)
+c.put('angela', 24)
+c.toString()        // -> "adam:29 < john:26 < angela:24"
+c.get('john')       // -> 26
+
+// Now 'john' is the most recently used entry, since we just requested it
+c.toString()        // -> "adam:29 < angela:24 < john:26"
+c.put('zorro', 141) // -> {key:adam, value:29}
+
+// Because we only have room for 3 entries, put-ing 'zorro' purged 'adam'
+c.toString()        // -> "angela:24 < john:26 < zorro:141"
+```
 
 # Usage
 
 Just copy the code on lru.js — for minimal functionality, you only need the lines up until the comment that says "Following code is optional".
 
-If you're really into package managers and love having lots of complicated little files in your project, you can use `npm install lru-fast`
+If you're really into package managers and love having lots of complicated little files in your project, you can use [`npm install lru-fast`](https://www.npmjs.com/package/lru-fast)
 
 # API
 
@@ -155,7 +159,7 @@ The internals calls `shift` as entries need to be evicted, so this method is gua
 
 # MIT license
 
-Copyright (c) 2010 Rasmus Andersson <http://hunch.se/>
+Copyright (c) 2010-2016 Rasmus Andersson <https://rsms.me/>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

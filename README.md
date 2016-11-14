@@ -57,6 +57,11 @@ Just copy the code on lru.js — for minimal functionality, you only need the li
 
 If you're really into package managers and love having lots of complicated little files in your project, you can use [`npm install lru-fast`](https://www.npmjs.com/package/lru-fast)
 
+Additionally:
+
+- Run tests with `npm test`
+- Run benchmarks with `npm run benchmark`
+
 # API
 
 ```ts

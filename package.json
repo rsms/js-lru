@@ -6,7 +6,8 @@
   "typings": "lru.d.ts",
   "scripts": {
     "test": "node test.js",
-    "prepublish": "npm test"
+    "prepublish": "npm test",
+    "benchmark": "node --expose-gc benchmark.js"
   },
   "repository": {
     "type": "git",

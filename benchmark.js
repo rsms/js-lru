@@ -1,8 +1,18 @@
 // This is a benchmark suite which will run with nodejs.
-// $ node benchmark.js
+// $ node --expose-gc benchmark.js
 var assert = require('assert'),
-    sys = require('sys'),
+    util = require('util'),
     LRUCache = require('./lru').LRUCache;
+
+// Create a cache with N entries
+var N = 10000;
+
+// Run each measurement Iterations times
+var Iterations = 1000;
+
+
+var has_gc_access = typeof gc === 'function';
+var gc_collect = has_gc_access ? gc : function(){};
 
 Number.prototype.toHuman = function(divisor) {
   var N = Math.round(divisor ? this/divisor : this);
@@ -16,41 +26,53 @@ Number.prototype.toSignedHuman = function(divisor) {
   return n;
 }
 
-function measure(enough, block) {
+function measure(block) {
+  gc_collect();
   var elapsed = 0, start, usec, n;
-  if (typeof enough === 'function') { block = enough; enough = false; }
   var sm = process.memoryUsage();
-  if (enough) {
+  if (Iterations && Iterations > 0) {
     start = new Date();
-    for (n = 0; elapsed < 1000; n++) {
+    for (n = 0; n < Iterations; n++) {
       block();
-      elapsed = new Date() - start;
     }
-    usec = (elapsed * 1000) / n;
+    usec = ((new Date() - start) / Iterations) * 1000;
   } else {
     start = new Date();
     block();
     usec = (new Date() - start) * 1000;
   }
-  var em = process.memoryUsage();
-  var mrssd = em.rss - sm.rss;
-  var mhtotd = em.heapTotal - sm.heapTotal;
-  var mhusedd = em.heapUsed - sm.heapUsed;
-  var msg = '\n----------\n  ' + block.toString().replace(/\n/g, "\n  ") + '\n' +
-    '   rss:        ' + mrssd.toSignedHuman(1024) + ' kB -- (' + sm.rss.toHuman(1024) + ' kB -> ' + em.rss.toHuman(1024) + ' kB)\n';
-  if (typeof sm.vsize === 'number') {
-    var mvsized = em.vsize - sm.vsize;
-    msg += '   vsize:      ' + mvsized.toSignedHuman(1024) + ' kB -- (' + sm.vsize.toHuman(1024) + ' kB -> ' + em.vsize.toHuman(1024) + ' kB)\n';
+
+  var msg = '\n----------\n  ' + block.toString().replace(/\n/g, "\n  ") + '\n';
+
+  if (has_gc_access) {
+    gc_collect();
+    var em = process.memoryUsage();
+    var mrssd = em.rss - sm.rss;
+    var mhtotd = em.heapTotal - sm.heapTotal;
+    var mhusedd = em.heapUsed - sm.heapUsed;
+    msg += '   rss:        ' + mrssd.toSignedHuman(1024) + ' kB -- (' +
+           sm.rss.toHuman(1024) + ' kB -> ' + em.rss.toHuman(1024) + ' kB)\n';
+    if (typeof sm.vsize === 'number') {
+      var mvsized = em.vsize - sm.vsize;
+      msg +=
+           '   vsize:      ' + mvsized.toSignedHuman(1024) + ' kB -- (' +
+           sm.vsize.toHuman(1024) + ' kB -> ' + em.vsize.toHuman(1024) + ' kB)\n';
+    }
+    msg += '   heap total: ' + mhtotd.toSignedHuman(1024) + ' kB -- (' +
+           sm.heapTotal.toHuman(1024) + ' kB -> ' + em.heapTotal.toHuman(1024) + ' kB)\n' +
+           '   heap used:  ' + mhusedd.toSignedHuman(1024) + ' kB -- (' +
+           sm.heapUsed.toHuman(1024) + ' kB -> ' + em.heapUsed.toHuman(1024) + ' kB)\n\n';
   }
-  msg += '   heap total: ' + mhtotd.toSignedHuman(1024) + ' kB -- (' + sm.heapTotal.toHuman(1024) + ' kB -> ' + em.heapTotal.toHuman(1024) + ' kB)\n' +
-    '   heap used:  ' + mhusedd.toSignedHuman(1024) + ' kB -- (' + sm.heapUsed.toHuman(1024) + ' kB -> ' + em.heapUsed.toHuman(1024) + ' kB)\n' +
-    '\n  -- ' + (usec / 1000) + 'ms' + (n ? ' (' + n + ' repetitions)' : '') + ' --\n';
-  sys.puts(msg);
+
+  var call_avg = usec;
+  msg += '  -- ' + (call_avg / 1000) + ' ms avg per iteration --\n';
+
+  process.stdout.write(msg);
 }
 
-// Create a cache with N entries
-var N = 100000;
 var c = new LRUCache(N);
+
+console.log('N = ' + N + ', Iterations = ' + Iterations);
 
 // We should probably spin up the system in some way, or repeat the benchmarks a
 // few times, since initial heap resizing takes considerable time.

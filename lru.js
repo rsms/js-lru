@@ -1,3 +1,17 @@
+// umd wrapper
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD
+        define([], factory);
+    } else if (typeof exports === 'object') {
+        // Node, CommonJS-like
+        module.exports = factory();
+    } else {
+        // Browser globals (root is window)
+        root.LRUCache = factory();
+    }
+}(this, function () {
+
 /**
  * A doubly linked list-based Least Recently Used (LRU) cache. Will keep most
  * recently used items while discarding least recently used items when its limit
@@ -250,4 +264,5 @@ LRUCache.prototype.toString = function() {
 };
 
 // Export ourselves
-if (typeof this === 'object') this.LRUCache = LRUCache;
+return LRUCache;
+}));

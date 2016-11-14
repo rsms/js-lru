@@ -21,13 +21,13 @@ function LRUCache (limit) {
   this.size = 0;
   // Maximum number of items this cache can hold.
   this.limit = limit;
-  this.head = this.tail = undefined;
+  this.oldest = this.newest = undefined;
   this._keymap = {};
 }
 
 
 LRUCache.prototype._markEntryAsUsed = function(entry) {
-  if (entry === this.tail) {
+  if (entry === this.newest) {
     // Already the most recenlty used entry, so no need to update the list
     return;
   }
@@ -36,8 +36,8 @@ LRUCache.prototype._markEntryAsUsed = function(entry) {
   //  <--- add direction --
   //   A  B  C  <D>  E
   if (entry.newer) {
-    if (entry === this.head) {
-      this.head = entry.newer;
+    if (entry === this.oldest) {
+      this.oldest = entry.newer;
     }
     entry.newer.older = entry.older; // C <-- E.
   }
@@ -45,11 +45,11 @@ LRUCache.prototype._markEntryAsUsed = function(entry) {
     entry.older.newer = entry.newer; // C. --> E
   }
   entry.newer = undefined; // D --x
-  entry.older = this.tail; // D. --> E
-  if (this.tail) {
-    this.tail.newer = entry; // E. <-- D
+  entry.older = this.newest; // D. --> E
+  if (this.newest) {
+    this.newest.newer = entry; // E. <-- D
   }
-  this.tail = entry;
+  this.newest = entry;
 };
 
 /**
@@ -70,17 +70,17 @@ LRUCache.prototype.put = function(key, value) {
   // new entry
   this._keymap[key] = entry = {key:key, value:value, older:undefined, newer:undefined};
 
-  if (this.tail) {
+  if (this.newest) {
     // link previous tail to the new tail (entry)
-    this.tail.newer = entry;
-    entry.older = this.tail;
+    this.newest.newer = entry;
+    entry.older = this.newest;
   } else {
     // we're first in -- yay
-    this.head = entry;
+    this.oldest = entry;
   }
 
   // add new entry to the end of the linked list -- it's now the freshest entry.
-  this.tail = entry;
+  this.newest = entry;
   this.size++;
   if (this.size > this.limit) {
     // we hit the limit -- remove the head
@@ -104,16 +104,16 @@ LRUCache.prototype.put = function(key, value) {
  */
 LRUCache.prototype.shift = function() {
   // todo: handle special case when limit == 1
-  var entry = this.head;
+  var entry = this.oldest;
   if (entry) {
-    if (this.head.newer) {
+    if (this.oldest.newer) {
       // advance the list
-      this.head = this.head.newer;
-      this.head.older = undefined;
+      this.oldest = this.oldest.newer;
+      this.oldest.older = undefined;
     } else {
       // the cache is exhausted
-      this.head = undefined;
-      this.tail = undefined;
+      this.oldest = undefined;
+      this.newest = undefined;
     }
     // Remove last strong reference to <entry> and remove links from the purged
     // entry being returned:
@@ -183,14 +183,14 @@ LRUCache.prototype.remove = function(key) {
     // remove the link to us
     entry.newer.older = undefined;
     // link the newer entry to head
-    this.head = entry.newer;
+    this.oldest = entry.newer;
   } else if (entry.older) {
     // remove the link to us
     entry.older.newer = undefined;
     // link the newer entry to head
-    this.tail = entry.older;
+    this.newest = entry.older;
   } else {// if(entry.older === undefined && entry.newer === undefined) {
-    this.head = this.tail = undefined;
+    this.oldest = this.newest = undefined;
   }
 
   this.size--;
@@ -200,7 +200,7 @@ LRUCache.prototype.remove = function(key) {
 /** Removes all entries */
 LRUCache.prototype.removeAll = function() {
   // This should be safe, as we never expose strong refrences to the outside
-  this.head = this.tail = undefined;
+  this.oldest = this.newest = undefined;
   this.size = 0;
   this._keymap = {};
 };
@@ -240,13 +240,13 @@ LRUCache.prototype.forEach = function(fun, context, desc) {
     context = this;
   }
   if (desc) {
-    entry = this.tail;
+    entry = this.newest;
     while (entry) {
       fun.call(context, entry.key, entry.value, this);
       entry = entry.older;
     }
   } else {
-    entry = this.head;
+    entry = this.oldest;
     while (entry) {
       fun.call(context, entry.key, entry.value, this);
       entry = entry.newer;
@@ -256,7 +256,7 @@ LRUCache.prototype.forEach = function(fun, context, desc) {
 
 /** Returns a JSON (array) representation */
 LRUCache.prototype.toJSON = function() {
-  var s = new Array(this.size), i = 0, entry = this.head;
+  var s = new Array(this.size), i = 0, entry = this.oldest;
   while (entry) {
     s[i++] = { key: entry.key, value: entry.value };
     entry = entry.newer;
@@ -266,7 +266,7 @@ LRUCache.prototype.toJSON = function() {
 
 /** Returns a String representation */
 LRUCache.prototype.toString = function() {
-  var s = '', entry = this.head;
+  var s = '', entry = this.oldest;
   while (entry) {
     s += String(entry.key)+':'+entry.value;
     entry = entry.newer;

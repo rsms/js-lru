@@ -9,8 +9,8 @@ basics() {
   let c = new LRUCache(4);
   assert(c.size == 0);
   assert(c.limit == 4);
-  assert(!c.head);
-  assert(!c.tail);
+  assert(!c.oldest);
+  assert(!c.newest);
 
   c.put('adam', 29);
   c.put('john', 26);
@@ -56,8 +56,8 @@ remove() {
   c.remove('adam');
   c.remove('john');
   assert.equal(c.size, 0);
-  assert.equal(c.head, undefined);
-  assert.equal(c.tail, undefined);
+  assert.equal(c.oldest, undefined);
+  assert.equal(c.newest, undefined);
 },
 
 shift() {
@@ -93,29 +93,29 @@ put() {
   c.put('a', 3);
   c.put('a', 4);
   assert(c.size == 1);
-  assert(c.tail === c.head);
-  assert.deepEqual(c.tail, {key:'a', value:4, newer: undefined, older: undefined });
+  assert(c.newest === c.oldest);
+  assert.deepEqual(c.newest, {key:'a', value:4, newer: undefined, older: undefined });
 
   c.put('a', 5);
   assert(c.size == 1);
-  assert(c.tail === c.head);
-  assert.deepEqual(c.tail, {key:'a', value:5, newer: undefined, older: undefined });
+  assert(c.newest === c.oldest);
+  assert.deepEqual(c.newest, {key:'a', value:5, newer: undefined, older: undefined });
 
   c.put('b', 6);
   assert(c.size == 2);
-  assert(c.tail !== c.head);
+  assert(c.newest !== c.oldest);
 
   let ent1 = {key:'a', value:5, newer: undefined, older: undefined };
   let ent0 = {key:'b', value:6, newer: undefined, older: ent1 };
   ent1.newer = ent0;
-  assert.deepEqual(c.tail, ent0);
-  assert.deepEqual(c.head, ent1);
+  assert.deepEqual(c.newest, ent0);
+  assert.deepEqual(c.oldest, ent1);
 
   c.shift();
   assert(c.size == 1);
   c.shift();
   assert(c.size == 0);
-  c.forEach(function(){ assert(false) }, undefined, true);  // check .tail correct
+  c.forEach(function(){ assert(false) }, undefined, true);  // check .newest correct
 },
 
 

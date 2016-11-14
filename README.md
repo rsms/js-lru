@@ -86,10 +86,10 @@ export class LRUCache<K,V> {
   limit: number;
 
   // Least recently-used entry
-  head: Entry<K,V>;
+  oldest: Entry<K,V>;
 
   // Most recently-used entry
-  tail: Entry<K,V>;
+  newest: Entry<K,V>;
 
   // Put <value> into the cache associated with <key>. Replaces any existing entry
   // with the same key.

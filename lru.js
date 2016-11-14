@@ -25,15 +25,51 @@ function LRUCache (limit) {
   this._keymap = {};
 }
 
+
+LRUCache.prototype._markEntryAsUsed = function(entry) {
+  if (entry === this.tail) {
+    // Already the most recenlty used entry, so no need to update the list
+    return;
+  }
+  // HEAD--------------TAIL
+  //   <.older   .newer>
+  //  <--- add direction --
+  //   A  B  C  <D>  E
+  if (entry.newer) {
+    if (entry === this.head) {
+      this.head = entry.newer;
+    }
+    entry.newer.older = entry.older; // C <-- E.
+  }
+  if (entry.older) {
+    entry.older.newer = entry.newer; // C. --> E
+  }
+  entry.newer = undefined; // D --x
+  entry.older = this.tail; // D. --> E
+  if (this.tail) {
+    this.tail.newer = entry; // E. <-- D
+  }
+  this.tail = entry;
+};
+
 /**
  * Put <value> into the cache associated with <key>. Returns the entry which was
  * removed to make room for the new entry. Otherwise undefined is returned
  * (i.e. if there was enough room already).
  */
 LRUCache.prototype.put = function(key, value) {
-  var entry = {key:key, value:value};
-  // Note: No protection agains replacing, and thus orphan entries. By design.
-  this._keymap[key] = entry;
+  var entry = this._keymap[key];
+
+  if (entry) {
+    // update existing
+    entry.value = value;
+    this._markEntryAsUsed(entry);
+    return;
+  }
+
+  // new entry
+  this._keymap[key] = entry = {key:key, value:value, older:undefined, newer:undefined};
+
   if (this.tail) {
     // link previous tail to the new tail (entry)
     this.tail.newer = entry;
@@ -42,6 +78,7 @@ LRUCache.prototype.put = function(key, value) {
     // we're first in -- yay
     this.head = entry;
   }
+
   // add new entry to the end of the linked list -- it's now the freshest entry.
   this.tail = entry;
   this.size++;
@@ -97,29 +134,7 @@ LRUCache.prototype.get = function(key, returnEntry) {
   var entry = this._keymap[key];
   if (entry === undefined) return; // Not cached. Sorry.
   // As <key> was found in the cache, register it as being requested recently
-  if (entry === this.tail) {
-    // Already the most recenlty used entry, so no need to update the list
-    return returnEntry ? entry : entry.value;
-  }
-  // HEAD--------------TAIL
-  //   <.older   .newer>
-  //  <--- add direction --
-  //   A  B  C  <D>  E
-  if (entry.newer) {
-    if (entry === this.head) {
-      this.head = entry.newer;
-    }
-    entry.newer.older = entry.older; // C <-- E.
-  }
-  if (entry.older) {
-    entry.older.newer = entry.newer; // C. --> E
-  }
-  entry.newer = undefined; // D --x
-  entry.older = this.tail; // D. --> E
-  if (this.tail) {
-    this.tail.newer = entry; // E. <-- D
-  }
-  this.tail = entry;
+  this._markEntryAsUsed(entry);
   return returnEntry ? entry : entry.value;
 };
 

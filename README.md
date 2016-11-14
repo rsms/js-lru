@@ -21,13 +21,17 @@ This implementation is compatible with most JavaScript environments (including y
 
 Fancy ASCII art illustration of the general design:
 
-        entry             entry             entry             entry        
-        ______            ______            ______            ______       
-       | head |.newer => |      |.newer => |      |.newer => | tail |      
-       |  A   |          |  B   |          |  C   |          |  D   |      
-       |______| <= older.|______| <= older.|______| <= older.|______|      
+```txt
+         entry             entry             entry             entry        
+         ______            ______            ______            ______       
+        | head |.newer => |      |.newer => |      |.newer => | tail |      
+.head = |  A   |          |  B   |          |  C   |          |  D   | = .tail
+        |______| <= older.|______| <= older.|______| <= older.|______|      
                                                                            
-    removed  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  added
+     removed  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  added
+       old                                                            new
+least-recently used                                            most-recently used
+```
 
 ## Example
 
@@ -72,15 +76,18 @@ export class LRUCache<K,V> {
   // Maximum number of items this map can hold
   limit: number;
 
-  // Most recently-used entry
+  // Least recently-used entry
   head: Entry<K,V>;
 
-  // Least recently-used entry
+  // Most recently-used entry
   tail: Entry<K,V>;
 
-  // Put <value> into the cache associated with <key>.
-  // Returns the entry which was removed to make room for the new entry. Otherwise
-  // undefined is returned (i.e. if there was enough room already).
+  // Put <value> into the cache associated with <key>. Replaces any existing entry
+  // with the same key.
+  // Returns any entry which was removed to make room for a new entry, or undefined.
+  // Note: The behavior of this method changed between v0.1 and v0.2 where in v0.1
+  // putting multiple values with the same key would store all values (accessible
+  // via forEach and other forms of traversal.) v0.2 stores exactly one value per key.
   put(key :K, value :V) : Entry<K,V> | undefined;
 
   // Remove the least recently-used (oldest) entry from the cache.
@@ -145,36 +152,6 @@ c.shift = function() {
 
 The internals calls `shift` as entries need to be evicted, so this method is guaranteed to be called for any item that's removed from the cache. The returned entry must not include any strong references to other entries. See note in the documentation of `LRUCache.prototype.put (Object key, Object value) -> Object entry`.
 
-
-
-### *LRUCache.prototype*.toJSON () -> Array representation
-
-Returns an array of object (for use by `JSON.stringify`) of the form:
-
-    [
-      {key:"key1", value:"value1"},
-      {key:"key2", value:"value2"},
-      {key:"key3", value:"value3"}
-    ]
-
-### *LRUCache.prototype*.toString () -> String representation
-
-Returns a string representation in the format:
-
-    key1:value1 < key2:value2 < key3:value3
-
-Oldest (head) on the left hand side and newer entries to the right hand side.
-
-## Factorising a minimal implementation
-
-As this code is most suitable for embedding, here is a shortlist of the essential parts (prototype functions) needed for a minimal implementation. All other functions, not mentioned here, are simply ancillary.
-
-- **LRUCache** -- the constructor is naturally a good thing to keep ;)
-- *LRUCache.prototype*.**put** -- handles appending and chaining.
-- *LRUCache.prototype*.**shift** -- used by **put** to "purge" an old entry.
-- *LRUCache.prototype*.**get** -- fetches a cached entry and registers that entry as being recently used.
-
-The border between "required" and "optional" code is marked in `lru.js` by a comment starting with `// Following code is optional`...
 
 # MIT license
 

@@ -85,35 +85,37 @@ shift() {
   assert.equal(c2.size, 0);
 },
 
-// v0.1 allows putting same key multiple times. v0.2 does not.
 put() {
-  // [version=0.1]
+  // Note: v0.1 allows putting same key multiple times. v0.2 does not.
   c = new LRUCache(4);
-  c.put(0, 1);
-  c.put(0, 2);
-  c.put(0, 3);
-  c.put(0, 4);
-  assert.equal(c.size, 4);
-  assert.deepEqual(c.shift(), {key:0, value:1, newer: undefined, older: undefined });
-  assert.deepEqual(c.shift(), {key:0, value:2, newer: undefined, older: undefined });
-  assert.deepEqual(c.shift(), {key:0, value:3, newer: undefined, older: undefined });
-  assert.deepEqual(c.shift(), {key:0, value:4, newer: undefined, older: undefined });
-  assert.equal(c.size, 0); // check .size correct
-  c.forEach(function(){assert(false)}, undefined, true);  // check .tail correct
+  c.put('a', 1);
+  c.put('a', 2);
+  c.put('a', 3);
+  c.put('a', 4);
+  assert(c.size == 1);
+  assert(c.tail === c.head);
+  assert.deepEqual(c.tail, {key:'a', value:4, newer: undefined, older: undefined });
 
-  // [version=0.2]
-  // c = new LRUCache(4);
-  // c.put(0, 1);
-  // c.put(0, 2);
-  // c.put(0, 3);
-  // c.put(0, 4);
-  // assert.equal(c.size, 4);
-  // assert.deepEqual(c.shift(), {key:0, value:1, newer: undefined, older: undefined });
-  // assert.deepEqual(c.shift(), {key:0, value:2, newer: undefined, older: undefined });
-  // assert.deepEqual(c.shift(), {key:0, value:3, newer: undefined, older: undefined });
-  // assert.deepEqual(c.shift(), {key:0, value:4, newer: undefined, older: undefined });
-  // assert.equal(c.size, 0); // check .size correct
-  // c.forEach(function(){assert(false)}, undefined, true);  // check .tail correct
+  c.put('a', 5);
+  assert(c.size == 1);
+  assert(c.tail === c.head);
+  assert.deepEqual(c.tail, {key:'a', value:5, newer: undefined, older: undefined });
+
+  c.put('b', 6);
+  assert(c.size == 2);
+  assert(c.tail !== c.head);
+
+  let ent1 = {key:'a', value:5, newer: undefined, older: undefined };
+  let ent0 = {key:'b', value:6, newer: undefined, older: ent1 };
+  ent1.newer = ent0;
+  assert.deepEqual(c.tail, ent0);
+  assert.deepEqual(c.head, ent1);
+
+  c.shift();
+  assert(c.size == 1);
+  c.shift();
+  assert(c.size == 0);
+  c.forEach(function(){ assert(false) }, undefined, true);  // check .tail correct
 },
 
 

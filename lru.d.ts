@@ -17,15 +17,18 @@ export class LRUCache<K,V> {
   // Maximum number of items this map can hold
   limit :number;
 
-  // Most recently-used entry
+  // Least recently-used entry
   head :Entry<K,V>;
 
-  // Least recently-used entry
+  // Most recently-used entry
   tail :Entry<K,V>;
 
-  // Put <value> into the cache associated with <key>.
-  // Returns the entry which was removed to make room for the new entry. Otherwise
-  // undefined is returned (i.e. if there was enough room already).
+  // Put <value> into the cache associated with <key>. Replaces any existing entry
+  // with the same key.
+  // Returns any entry which was removed to make room for a new entry, or undefined.
+  // Note: The behavior of this method changed between v0.1 and v0.2 where in v0.1
+  // putting multiple values with the same key would store all values (accessible
+  // via forEach and other forms of traversal.) v0.2 stores exactly one value per key.
   put(key :K, value :V) : Entry<K,V> | undefined;
 
   // Purge the least recently used (oldest) entry from the cache.

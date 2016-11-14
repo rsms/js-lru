@@ -22,15 +22,13 @@ This implementation is compatible with most JavaScript environments (including y
 Fancy ASCII art illustration of the general design:
 
 ```txt
-         entry             entry             entry             entry        
-         ______            ______            ______            ______       
-        | head |.newer => |      |.newer => |      |.newer => | tail |      
-.head = |  A   |          |  B   |          |  C   |          |  D   | = .tail
-        |______| <= older.|______| <= older.|______| <= older.|______|      
-                                                                           
-     removed  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  added
-       old                                                            new
-least-recently used                                            most-recently used
+           entry             entry             entry             entry        
+           ______            ______            ______            ______       
+          | head |.newer => |      |.newer => |      |.newer => | tail |      
+.oldest = |  A   |          |  B   |          |  C   |          |  D   | = .newest
+          |______| <= older.|______| <= older.|______| <= older.|______|      
+                                                                             
+       removed  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  added
 ```
 
 ## Example

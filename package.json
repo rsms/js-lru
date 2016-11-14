@@ -1,8 +1,9 @@
 {
   "name": "lru-fast",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "finite key-value cache using the Least Recently Used (LRU) algorithm where the most recently used objects are keept in cache while less recently used items are purged",
   "main": "lru.js",
+  "typings": "lru.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

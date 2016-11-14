@@ -1,86 +1,175 @@
 // Test which will run in nodejs
 // $ node test.js
 // (Might work with other CommonJS-compatible environments)
-var assert = require('assert'),
-    LRUCache = require('./lru').LRUCache;
-var c = new LRUCache(4);
+const assert = require('assert');
+const LRUCache = require('./lru').LRUCache;
+const tests = {
 
-c.put('adam', 29);
-c.put('john', 26);
-c.put('angela', 24);
-c.put('bob', 48);
-assert.equal(c.toString(), 'adam:29 < john:26 < angela:24 < bob:48');
-assert.equal(c.size, 4);
+basics() {
+  let c = new LRUCache(4);
+  assert(c.size == 0);
+  assert(c.limit == 4);
+  assert(!c.head);
+  assert(!c.tail);
 
-assert.equal(c.get('adam'), 29);
-assert.equal(c.get('john'), 26);
-assert.equal(c.get('angela'), 24);
-assert.equal(c.get('bob'), 48);
-assert.equal(c.toString(), 'adam:29 < john:26 < angela:24 < bob:48');
+  c.put('adam', 29);
+  c.put('john', 26);
+  c.put('angela', 24);
+  c.put('bob', 48);
+  assert.equal(c.toString(), 'adam:29 < john:26 < angela:24 < bob:48');
+  assert.equal(c.size, 4);
 
-assert.equal(c.get('angela'), 24);
-assert.equal(c.toString(), 'adam:29 < john:26 < bob:48 < angela:24');
+  assert.equal(c.get('adam'), 29);
+  assert.equal(c.get('john'), 26);
+  assert.equal(c.get('angela'), 24);
+  assert.equal(c.get('bob'), 48);
+  assert.equal(c.toString(), 'adam:29 < john:26 < angela:24 < bob:48');
 
-c.put('ygwie', 81);
-assert.equal(c.toString(), 'john:26 < bob:48 < angela:24 < ygwie:81');
-assert.equal(c.size, 4);
-assert.equal(c.get('adam'), undefined);
+  assert.equal(c.get('angela'), 24);
+  assert.equal(c.toString(), 'adam:29 < john:26 < bob:48 < angela:24');
 
-c.set('john', 11);
-assert.equal(c.toString(), 'bob:48 < angela:24 < ygwie:81 < john:11');
-assert.equal(c.get('john'), 11);
+  c.put('ygwie', 81);
+  assert.equal(c.toString(), 'john:26 < bob:48 < angela:24 < ygwie:81');
+  assert.equal(c.size, 4);
+  assert.equal(c.get('adam'), undefined);
 
-var expectedKeys = ['bob', 'angela', 'ygwie', 'john'];
-c.forEach(function(k, v) {
-  //sys.puts(k+': '+v);
-  assert.equal(k, expectedKeys.shift());
-})
+  c.set('john', 11);
+  assert.equal(c.toString(), 'bob:48 < angela:24 < ygwie:81 < john:11');
+  assert.equal(c.get('john'), 11);
 
-var current_size = c.size;
-c.remove('john');
-assert.equal(current_size - 1, c.size);
+  let expectedKeys = ['bob', 'angela', 'ygwie', 'john'];
+  c.forEach(function(k, v) {
+    //sys.puts(k+': '+v);
+    assert.equal(k, expectedKeys.shift());
+  })
 
-//test remove
-var to_remove = new LRUCache(4);
-to_remove.put('adam', 29);
-to_remove.put('john', 26);
-to_remove.remove('adam');
-to_remove.remove('john');
-assert.equal(to_remove.size, 0);
-assert.equal(to_remove.head, undefined);
-assert.equal(to_remove.tail, undefined);
+  // removing one item decrements size by one
+  let currentSize = c.size;
+  assert(c.remove('john') !== undefined);
+  assert.equal(currentSize - 1, c.size);
+},
 
-//test shift
-var s = new LRUCache(4);
-assert.equal(s.size, 0);
-s.put('a', 1)
-s.put('b', 2)
-s.put('c', 3)
-assert.equal(s.size, 3);
-var c = s.shift();
-assert(c.key, 'a');
-assert(c.value, 1);
-c = s.shift();
-assert(c.key, 'b');
-assert(c.value, 2);
-c = s.shift();
-assert(c.key, 'c');
-assert(c.value, 3);
-s.forEach(function () { assert(false); }, true);
-assert.equal(s.size, 0);
+remove() {
+  let c = new LRUCache(4);
+  c.put('adam', 29);
+  c.put('john', 26);
+  c.remove('adam');
+  c.remove('john');
+  assert.equal(c.size, 0);
+  assert.equal(c.head, undefined);
+  assert.equal(c.tail, undefined);
+},
 
-var c = new LRUCache(4);
+shift() {
+  let c2 = new LRUCache(4);
+  assert(c2.size == 0);
+  c2.put('a', 1)
+  c2.put('b', 2)
+  c2.put('c', 3)
+  assert.equal(c2.size, 3);
 
-c.put(0,1);
-c.put(0,2);
-c.put(0,3);
-c.put(0,4);
+  let e = c2.shift();
+  assert.equal(e.key, 'a');
+  assert.equal(e.value, 1);
+  
+  e = c2.shift();
+  assert.equal(e.key, 'b');
+  assert.equal(e.value, 2);
+  
+  e = c2.shift();
+  assert.equal(e.key, 'c');
+  assert.equal(e.value, 3);
 
-assert.equal(c.size, 4);
-assert.deepEqual(c.shift(), {key:0, value:1, newer: undefined, older: undefined });
-assert.deepEqual(c.shift(), {key:0, value:2, newer: undefined, older: undefined });
-assert.deepEqual(c.shift(), {key:0, value:3, newer: undefined, older: undefined });
-assert.deepEqual(c.shift(), {key:0, value:4, newer: undefined, older: undefined });
-assert.equal(c.size, 0); // check .size correct
-c.forEach(function(){assert(false)}, undefined, true);  // check .tail correct
-// If we made it down here, all tests passed. Neat.
+  // c2 should be empty
+  c2.forEach(function () { assert(false); }, true);
+  assert.equal(c2.size, 0);
+},
+
+// v0.1 allows putting same key multiple times. v0.2 does not.
+put() {
+  // [version=0.1]
+  c = new LRUCache(4);
+  c.put(0, 1);
+  c.put(0, 2);
+  c.put(0, 3);
+  c.put(0, 4);
+  assert.equal(c.size, 4);
+  assert.deepEqual(c.shift(), {key:0, value:1, newer: undefined, older: undefined });
+  assert.deepEqual(c.shift(), {key:0, value:2, newer: undefined, older: undefined });
+  assert.deepEqual(c.shift(), {key:0, value:3, newer: undefined, older: undefined });
+  assert.deepEqual(c.shift(), {key:0, value:4, newer: undefined, older: undefined });
+  assert.equal(c.size, 0); // check .size correct
+  c.forEach(function(){assert(false)}, undefined, true);  // check .tail correct
+
+  // [version=0.2]
+  // c = new LRUCache(4);
+  // c.put(0, 1);
+  // c.put(0, 2);
+  // c.put(0, 3);
+  // c.put(0, 4);
+  // assert.equal(c.size, 4);
+  // assert.deepEqual(c.shift(), {key:0, value:1, newer: undefined, older: undefined });
+  // assert.deepEqual(c.shift(), {key:0, value:2, newer: undefined, older: undefined });
+  // assert.deepEqual(c.shift(), {key:0, value:3, newer: undefined, older: undefined });
+  // assert.deepEqual(c.shift(), {key:0, value:4, newer: undefined, older: undefined });
+  // assert.equal(c.size, 0); // check .size correct
+  // c.forEach(function(){assert(false)}, undefined, true);  // check .tail correct
+},
+
+
+toJSON() {
+  let c = new LRUCache(4);
+  c.put('adam', 29);
+  c.put('john', 26);
+  c.put('angela', 24);
+  c.put('bob', 48);
+  let json = c.toJSON();
+  assert(json.length == 4);
+  assert.deepEqual(json, [
+    {key:'adam', value:29},
+    {key:'john', value:26},
+    {key:'angela', value:24},
+    {key:'bob', value:48},
+  ]);
+},
+
+
+}; // tests
+
+
+function fmttime(t) {
+  return (Math.round((t)*10)/10)+'ms';
+}
+
+function die(err) {
+  console.error('\n' + (err.stack || err));
+  process.exit(1);
+}
+
+function runNextTest(tests, testNames, allDoneCallback) {
+  let testName = testNames[0];
+  if (!testName) {
+    return allDoneCallback();
+  }
+  process.stdout.write(testName+' ... ');
+  let t1 = Date.now();
+  let next = function() {
+    t1 = Date.now() - t1;
+    process.stdout.write('ok ('+fmttime(t1)+')\n');
+    runNextTest(tests, testNames.slice(1), allDoneCallback);
+  };
+  try {
+    let p = tests[testName]();
+    if (p && p instanceof Promise) {
+      p.then(next).catch(die);
+    } else {
+      next();
+    }
+  } catch (err) {
+    die(err);
+  }
+}
+
+runNextTest(tests, Object.keys(tests), function() {
+  console.log(Object.keys(tests).length+' tests passed');
+});

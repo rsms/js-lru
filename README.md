@@ -51,89 +51,100 @@ If you're really into package managers and love having lots of complicated littl
 
 # API
 
-An entry is a simple `Object` with at least two members: `{key:Object, value:Object}`. An entry might also have a `newer` member which points to a newer entry, and/or a `older` member pointing to an older entry.
+```ts
 
-### new LRUCache(Number limit) -> LRUCache instance
+// An entry holds the key and value, and pointers to any older and newer entries.
+interface Entry<K,V> {
+  older :Entry<K,V>;
+  newer :Entry<K,V>;
+  key   :K;
+  value :V;
+}
 
-Creates a new cache object which will hold up to `limit` entries.
+export class LRUCache<K,V> {
+  // Construct a new cache object which will hold up to limit entries.
+  // When the size == limit, a `put` operation will evict the oldest entry.
+  constructor(limit :number);
 
-### *LRUCache.prototype*.size -> Number
+  // Current number of items
+  size: number;
 
-Current number of entries. Read-only.
+  // Maximum number of items this map can hold
+  limit: number;
 
-### *LRUCache.prototype*.limit <-> Number
+  // Most recently-used entry
+  head: Entry<K,V>;
 
-Maximum number of items this cache will keep.
+  // Least recently-used entry
+  tail: Entry<K,V>;
 
-### *LRUCache.prototype*.put (Object key, Object value) -> Object entry
+  // Put <value> into the cache associated with <key>.
+  // Returns the entry which was removed to make room for the new entry. Otherwise
+  // undefined is returned (i.e. if there was enough room already).
+  put(key :K, value :V) : Entry<K,V> | undefined;
 
-Put `value` into the cache associated with `key`.
+  // Remove the least recently-used (oldest) entry from the cache.
+  // Returns the removed entry, or undefined if the cache was empty.
+  shift() : Entry<K,V> | undefined;
 
-**Returns an entry which was removed** (to make room for the new entry) or  `undefined` if there was enough space for the new entry.
+  // Get and register recent use of <key>.
+  // Returns the value associated with <key> or undefined if not in cache.
+  get(key :K) : V | undefined;
 
-> **Note:** The returned entry does **not** include any (strong) references to other entries (i.e. there is no `older` or `newer` members). This design makes garbage collection predictable.
+  // Check if <key> is in the cache without registering recent use. Feasible if
+  // you do not want to chage the state of the cache, but only "peek" at it.
+  // Returns the entry associated with <key> if found, or undefined if not found.
+  //
+  // Note: The entry returned is managed by the cache (until purged) and thus
+  // contains members with strong references which might be altered at any time by
+  // the cache object. You should look at the returned entry as being immutable.
+  find(key :K) : V | undefined;
 
-### *LRUCache.prototype*.get (Object key) -> Object value
+  // Update the value of entry with <key>.
+  // Returns the old value, or undefined if entry was not in the cache.
+  set(key :K, value :V) : V | undefined;
 
-Retrieve value for, and register recent use of, `key`. Returns the value associated with `key` or `undefined` if not in the cache.
+  // Remove entry <key> from cache and return its value.
+  // Returns the removed value, or undefined if not found.
+  remove(key :K) : V | undefined;
 
-### *LRUCache.prototype*.find (Object key) -> Object entry
+  // Removes all entries
+  removeAll();
 
-Check if `key` is in the cache *without registering recent use*. Feasible if
-you do not want to chage the state of the cache, but only "peek" at it.
-Returns the entry associated with `key` if found, otherwise `undefined` is
-returned.
+  // Return an array containing all keys of entries stored in the cache object, in
+  // arbitrary order.
+  keys() : Array<K>;
 
-> **Note:** The entry returned is *managed by the cache* (until purged) and thus contains members with strong references which might be altered at any time by the cache object. You should look at the returned entry as being immutable.
+  // Call `fun` for each entry. Starting with the newest entry if `desc` is a true
+  // value, otherwise starts with the oldest (head) enrty and moves towards the tail.
+  // context, Object key, Object value, LRUCache self
+  forEach(
+    fun :(context :any, key :K, value :V, self :LRUCache<K,V>)=>void,
+    context? :any,
+    desc? :boolean
+  ) : void;
 
-### *LRUCache.prototype*.shift () -> Object entry
+  // Returns a JSON (array) representation
+  toJSON() : Array<{key :K, value :V}>;
 
-Remove the least recently used (oldest) entry. Returns the removed entry, or `undefined` if the cache was empty.
+  // Returns a human-readable text representation
+  toString() : string;
+}
+```
 
-If you need to perform any form of finalization of purged items, this is a good place to do it. Simply override/replace this function:
+If you need to perform any form of finalization of items as they are evicted from the cache, wrapping the `shift` method is a good way to do it:
 
-    var c = new LRUCache(123);
-    c.shift = function() {
-      var entry = LRUCache.prototype.shift.call(this);
-      doSomethingWith(entry);
-      return entry;
-    }
+```js
+let c = new LRUCache(123);
+c.shift = function() {
+  let entry = LRUCache.prototype.shift.call(this);
+  doSomethingWith(entry);
+  return entry;
+}
+```
 
-The returned entry must not include any strong references to other entries. See note in the documentation of `LRUCache.prototype.put (Object key, Object value) -> Object entry`.
+The internals calls `shift` as entries need to be evicted, so this method is guaranteed to be called for any item that's removed from the cache. The returned entry must not include any strong references to other entries. See note in the documentation of `LRUCache.prototype.put (Object key, Object value) -> Object entry`.
 
-### *LRUCache.prototype*.set (key, value) -> Object oldValue
-
-Update the value of entry with `key` or `put` a new entry. Returns the old value, or undefined if the cache was empty.
-
-### *LRUCache.prototype*.remove (key) -> Object value
-
-Remove entry `key` from cache and return its value. Returns `undefined` if `key` is not found.
-
-### *LRUCache.prototype*.removeAll () -> LRUCache instance
-
-Removes all entries and return itself.
-
-### *LRUCache.prototype*.keys () -> Array keys
-
-Return an array containing all keys of entries in arbitrary order.
-
-### *LRUCache.prototype*.forEach (fun, [Object context, Boolean desc | true])
-
-Call `fun` for each entry. Starting with the newest entry if `desc` is a true
-value, otherwise starts with the oldest (head) enrty and moves towards the
-tail.
-
-Returns nothing (`undefined`).
-
-`fun` is called with 3 arguments in the context `context`:
-
-    fun.call(context, Object key, Object value, LRUCache self)
-
-Example which prints "key: value" starting with the most recent entry:
-
-    cache.forEach(function(key, value) {
-      puts(key+': '+value);
-    }, true);
 
 
 ### *LRUCache.prototype*.toJSON () -> Array representation

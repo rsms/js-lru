@@ -1,3 +1,4 @@
+// An entry holds the key and value, and pointers to any older and newer entries.
 interface Entry<K,V> {
   older :Entry<K,V>;
   newer :Entry<K,V>;
@@ -6,7 +7,21 @@ interface Entry<K,V> {
 }
 
 export class LRUCache<K,V> {
+  // Construct a new cache object which will hold up to limit entries.
+  // When the size == limit, a `put` operation will evict the oldest entry.
   constructor(limit :number);
+
+  // Current number of items
+  size :number;
+
+  // Maximum number of items this map can hold
+  limit :number;
+
+  // Most recently-used entry
+  head :Entry<K,V>;
+
+  // Least recently-used entry
+  tail :Entry<K,V>;
 
   // Put <value> into the cache associated with <key>.
   // Returns the entry which was removed to make room for the new entry. Otherwise
@@ -24,7 +39,11 @@ export class LRUCache<K,V> {
   // Check if <key> is in the cache without registering recent use. Feasible if
   // you do not want to chage the state of the cache, but only "peek" at it.
   // Returns the entry associated with <key> if found, or undefined if not found.
-  find(key :K) : V | undefined;
+  //
+  // Note: The entry returned is managed by the cache (until purged) and thus
+  // contains members with strong references which might be altered at any time by
+  // the cache object. You should look at the returned entry as being immutable.
+  find(key :K) : Entry<K,V> | undefined;
 
   // Update the value of entry with <key>.
   // Returns the old value, or undefined if entry was not in the cache.
@@ -45,13 +64,13 @@ export class LRUCache<K,V> {
   // value, otherwise starts with the oldest (head) enrty and moves towards the tail.
   // context, Object key, Object value, LRUCache self
   forEach(
-    fun :(context :any, key :K, value :V, self :LRUCache<K,V>)=>void,
+    fun      :(context :any, key :K, value :V, self :LRUCache<K,V>)=>void,
     context? :any,
-    desc? :boolean
+    desc?    :boolean
   ) : void;
 
   // Returns a JSON (array) representation
-  toJSON() : string;
+  toJSON() : Array<{key :K, value :V}>;
 
   // Returns a human-readable text representation
   toString() : string;

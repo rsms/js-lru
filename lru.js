@@ -21,6 +21,7 @@ function LRUCache (limit) {
   this.size = 0;
   // Maximum number of items this cache can hold.
   this.limit = limit;
+  this.head = this.tail = undefined;
   this._keymap = {};
 }
 
@@ -105,16 +106,19 @@ LRUCache.prototype.get = function(key, returnEntry) {
   //  <--- add direction --
   //   A  B  C  <D>  E
   if (entry.newer) {
-    if (entry === this.head)
+    if (entry === this.head) {
       this.head = entry.newer;
+    }
     entry.newer.older = entry.older; // C <-- E.
   }
-  if (entry.older)
+  if (entry.older) {
     entry.older.newer = entry.newer; // C. --> E
+  }
   entry.newer = undefined; // D --x
   entry.older = this.tail; // D. --> E
-  if (this.tail)
+  if (this.tail) {
     this.tail.newer = entry; // E. <-- D
+  }
   this.tail = entry;
   return returnEntry ? entry : entry.value;
 };
@@ -191,11 +195,15 @@ LRUCache.prototype.removeAll = function() {
  * arbitrary order.
  */
 if (typeof Object.keys === 'function') {
-  LRUCache.prototype.keys = function() { return Object.keys(this._keymap); };
+  LRUCache.prototype.keys = function() {
+    return Object.keys(this._keymap);
+  };
 } else {
   LRUCache.prototype.keys = function() {
     var keys = [];
-    for (var k in this._keymap) keys.push(k);
+    for (var k in this._keymap) {
+      keys.push(k);
+    }
     return keys;
   };
 }
@@ -210,8 +218,12 @@ if (typeof Object.keys === 'function') {
  */
 LRUCache.prototype.forEach = function(fun, context, desc) {
   var entry;
-  if (context === true) { desc = true; context = undefined; }
-  else if (typeof context !== 'object') context = this;
+  if (context === true) {
+    desc = true;
+    context = undefined;
+  } else if (typeof context !== 'object') {
+    context = this;
+  }
   if (desc) {
     entry = this.tail;
     while (entry) {
@@ -229,9 +241,9 @@ LRUCache.prototype.forEach = function(fun, context, desc) {
 
 /** Returns a JSON (array) representation */
 LRUCache.prototype.toJSON = function() {
-  var s = [], entry = this.head;
+  var s = new Array(this.size), i = 0, entry = this.head;
   while (entry) {
-    s.push({key:entry.key.toJSON(), value:entry.value.toJSON()});
+    s[i++] = { key: entry.key, value: entry.value };
     entry = entry.newer;
   }
   return s;
@@ -243,8 +255,9 @@ LRUCache.prototype.toString = function() {
   while (entry) {
     s += String(entry.key)+':'+entry.value;
     entry = entry.newer;
-    if (entry)
+    if (entry) {
       s += ' < ';
+    }
   }
   return s;
 };

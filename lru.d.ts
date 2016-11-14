@@ -57,7 +57,8 @@ export class LRUCache<K,V> {
   remove(key :K) : V | undefined;
 
   // Removes all entries
-  removeAll();
+  // Returns nothing.
+  removeAll(): void;
 
   // Return an array containing all keys of entries stored in the cache object, in
   // arbitrary order.

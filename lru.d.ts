@@ -48,13 +48,9 @@ export class LRUMap<K,V> {
   // Check if there's a value for key in the cache without registering recent use.
   has(key :K) : boolean;
 
-  // Access entry for <key> without registering recent use. Useful if you do not
-  // want to chage the state of the cache, but only "peek" at it.
-  // Returns the entry associated with <key> if found, or undefined if not found.
-  //
-  // Note: The entry returned is managed by the cache (until purged) and thus
-  // contains members with strong references which might be altered at any time by
-  // the cache object. You should look at the returned entry as being immutable.
+  // Access value for <key> without registering recent use. Useful if you do not
+  // want to chage the state of the map, but only "peek" at it.
+  // Returns the value associated with <key> if found, or undefined if not found.
   find(key :K) : V | undefined;
 
   // Remove entry <key> from cache and return its value.

@@ -156,8 +156,8 @@ LRUMap.prototype.shift = function() {
     entry[NEWER] = entry[OLDER] = undefined;
     this._keymap.delete(entry.key);
     --this.size;
+    return [entry.key, entry.value];
   }
-  return entry;
 };
 
 // ----------------------------------------------------------------------------
@@ -165,7 +165,8 @@ LRUMap.prototype.shift = function() {
 // functionality.
 
 LRUMap.prototype.find = function(key) {
-  return this._keymap.get(key);
+  let e = this._keymap.get(key);
+  return e ? e.value : undefined;
 };
 
 LRUMap.prototype.has = function(key) {

@@ -39,7 +39,7 @@ export class LRUMap<K,V> {
 
   // Purge the least recently used (oldest) entry from the cache.
   // Returns the removed entry or undefined if the cache was empty.
-  shift() : Entry<K,V> | undefined;
+  shift() : [K,V] | undefined;
 
   // Get and register recent use of <key>.
   // Returns the value associated with <key> or undefined if not in cache.
@@ -55,7 +55,7 @@ export class LRUMap<K,V> {
   // Note: The entry returned is managed by the cache (until purged) and thus
   // contains members with strong references which might be altered at any time by
   // the cache object. You should look at the returned entry as being immutable.
-  find(key :K) : Entry<K,V> | undefined;
+  find(key :K) : V | undefined;
 
   // Remove entry <key> from cache and return its value.
   // Returns the removed value, or undefined if not found.

@@ -74,12 +74,6 @@ If you need ES5 compatibility e.g. to use with older browsers, [please use versi
 The API imitates that of [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), which means that in most cases you can use `LRUMap` as a drop-in replacement for `Map`.
 
 ```ts
-// An entry holds the key and value, and pointers to any older and newer entries.
-interface Entry<K,V> {
-  key   :K;
-  value :V;
-}
-
 export class LRUMap<K,V> {
   // Construct a new cache object which will hold up to limit entries.
   // When the size == limit, a `put` operation will evict the oldest entry.
@@ -115,7 +109,7 @@ export class LRUMap<K,V> {
 
   // Purge the least recently used (oldest) entry from the cache.
   // Returns the removed entry or undefined if the cache was empty.
-  shift() : Entry<K,V> | undefined;
+  shift() : [K,V] | undefined;
 
   // Get and register recent use of <key>.
   // Returns the value associated with <key> or undefined if not in cache.
@@ -131,7 +125,7 @@ export class LRUMap<K,V> {
   // Note: The entry returned is managed by the cache (until purged) and thus
   // contains members with strong references which might be altered at any time by
   // the cache object. You should look at the returned entry as being immutable.
-  find(key :K) : Entry<K,V> | undefined;
+  find(key :K) : V | undefined;
 
   // Remove entry <key> from cache and return its value.
   // Returns the removed value, or undefined if not found.
@@ -160,6 +154,15 @@ export class LRUMap<K,V> {
 
   // Returns a human-readable text representation
   toString() : string;
+}
+
+// An entry holds the key and value, and pointers to any older and newer entries.
+// Entries might hold references to adjacent entries in the internal linked-list.
+// Therefore you should never store or modify Entry objects. Instead, reference the
+// key and value of an entry when needed.
+interface Entry<K,V> {
+  key   :K;
+  value :V;
 }
 ```
 

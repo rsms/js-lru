@@ -165,16 +165,16 @@ shift() {
   asserteq(c2.size, 3);
 
   let e = c2.shift();
-  asserteq(e.key, 'a');
-  asserteq(e.value, 1);
+  asserteq(e[0], 'a');
+  asserteq(e[1], 1);
   
   e = c2.shift();
-  asserteq(e.key, 'b');
-  asserteq(e.value, 2);
+  asserteq(e[0], 'b');
+  asserteq(e[1], 2);
   
   e = c2.shift();
-  asserteq(e.key, 'c');
-  asserteq(e.value, 3);
+  asserteq(e[0], 'c');
+  asserteq(e[1], 3);
 
   // c2 should be empty
   c2.forEach(function () { assert(false); });

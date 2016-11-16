@@ -43,9 +43,10 @@ c.get('john')       // -> 26
 
 // Now 'john' is the most recently used entry, since we just requested it
 c.toString()        // -> "adam:29 < angela:24 < john:26"
-c.put('zorro', 141) // -> {key:adam, value:29}
+c.set('zorro', 141) // -> {key:adam, value:29}
 
-// Because we only have room for 3 entries, put-ing 'zorro' purged 'adam'
+// Because we only have room for 3 entries, adding 'zorro' caused 'adam'
+// to be removed in order to make room for the new entry
 c.toString()        // -> "angela:24 < john:26 < zorro:141"
 ```
 

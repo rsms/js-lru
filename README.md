@@ -1,6 +1,8 @@
 # Least Recently Used (LRU) cache algorithm
 
-A finite key-value cache using the [Least Recently Used (LRU)](http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used) cache algorithm where the most recently used objects are keept in cache while less recently used items are purged.
+A finite key-value map using the [Least Recently Used (LRU)](http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used) algorithm, where the most recently-used items are "keept alive" while older, less-recently used items are evicted to make room for newer items.
+
+Useful when you want to limit use of memory to only hold commonly-used things.
 
 ## Terminology & design
 

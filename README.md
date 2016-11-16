@@ -1,5 +1,7 @@
 # Least Recently Used (LRU) cache algorithm
 
+> This is an older version aimed for older JS environments lacking some post-ES5 features like Map and Symbol. If you're targeting a modern web browser or Nodejs, consider using [the latest version](https://github.com/rsms/js-lru) instead.
+
 A finite key-value cache using the [Least Recently Used (LRU)](http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used) cache algorithm where the most recently used objects are keept in cache while less recently used items are purged.
 
 This implementation is compatible with most JavaScript environments (including ye olde browser) and is very efficient.

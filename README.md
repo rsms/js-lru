@@ -53,7 +53,7 @@ c.toString()        // -> "angela:24 < john:26 < zorro:141"
 
 Just copy the code on lru.js — for minimal functionality, you only need the lines up until the comment that says "Following code is optional".
 
-If you're really into package managers and love having lots of complicated little files in your project, you can use [`npm install lru-fast`](https://www.npmjs.com/package/lru-fast)
+If you're really into package managers and love having lots of complicated little files in your project, you can use [`npm install lru_map`](https://www.npmjs.com/package/lru_map)
 
 Additionally:
 

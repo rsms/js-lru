@@ -2,129 +2,278 @@
 // $ node test.js
 // (Might work with other CommonJS-compatible environments)
 const assert = require('assert');
-const LRUCache = require('./lru').LRUCache;
+const LRUMap = require('./lru').LRUMap;
+const asserteq = assert.equal;
 const tests = {
 
-basics() {
-  let c = new LRUCache(4);
-  assert(c.size == 0);
-  assert(c.limit == 4);
-  assert(!c.oldest);
-  assert(!c.newest);
+['set and get']() {
+  let c = new LRUMap(4);
+  asserteq(c.size, 0);
+  asserteq(c.limit, 4);
+  asserteq(c.oldest, undefined);
+  asserteq(c.newest, undefined);
 
-  c.put('adam', 29);
-  c.put('john', 26);
-  c.put('angela', 24);
-  c.put('bob', 48);
-  assert.equal(c.toString(), 'adam:29 < john:26 < angela:24 < bob:48');
-  assert.equal(c.size, 4);
+  c.set('adam',   29)
+   .set('john',   26)
+   .set('angela', 24)
+   .set('bob',    48);
+  asserteq(c.toString(), 'adam:29 < john:26 < angela:24 < bob:48');
+  asserteq(c.size, 4);
 
-  assert.equal(c.get('adam'), 29);
-  assert.equal(c.get('john'), 26);
-  assert.equal(c.get('angela'), 24);
-  assert.equal(c.get('bob'), 48);
-  assert.equal(c.toString(), 'adam:29 < john:26 < angela:24 < bob:48');
+  asserteq(c.get('adam'), 29);
+  asserteq(c.get('john'), 26);
+  asserteq(c.get('angela'), 24);
+  asserteq(c.get('bob'), 48);
+  asserteq(c.toString(), 'adam:29 < john:26 < angela:24 < bob:48');
 
-  assert.equal(c.get('angela'), 24);
-  assert.equal(c.toString(), 'adam:29 < john:26 < bob:48 < angela:24');
+  asserteq(c.get('angela'), 24);
+  asserteq(c.toString(), 'adam:29 < john:26 < bob:48 < angela:24');
 
-  c.put('ygwie', 81);
-  assert.equal(c.toString(), 'john:26 < bob:48 < angela:24 < ygwie:81');
-  assert.equal(c.size, 4);
-  assert.equal(c.get('adam'), undefined);
+  c.set('ygwie', 81);
+  asserteq(c.toString(), 'john:26 < bob:48 < angela:24 < ygwie:81');
+  asserteq(c.size, 4);
+  asserteq(c.get('adam'), undefined);
 
   c.set('john', 11);
-  assert.equal(c.toString(), 'bob:48 < angela:24 < ygwie:81 < john:11');
-  assert.equal(c.get('john'), 11);
+  asserteq(c.toString(), 'bob:48 < angela:24 < ygwie:81 < john:11');
+  asserteq(c.get('john'), 11);
 
   let expectedKeys = ['bob', 'angela', 'ygwie', 'john'];
-  c.forEach(function(k, v) {
-    //sys.puts(k+': '+v);
-    assert.equal(k, expectedKeys.shift());
+  c.forEach(function(v, k) {
+    //sys.sets(k+': '+v);
+    asserteq(k, expectedKeys.shift());
   })
 
   // removing one item decrements size by one
   let currentSize = c.size;
-  assert(c.remove('john') !== undefined);
-  assert.equal(currentSize - 1, c.size);
+  assert(c.delete('john') !== undefined);
+  asserteq(currentSize - 1, c.size);
 },
 
-remove() {
-  let c = new LRUCache(4);
-  c.put('adam', 29);
-  c.put('john', 26);
-  c.remove('adam');
-  c.remove('john');
-  assert.equal(c.size, 0);
-  assert.equal(c.oldest, undefined);
-  assert.equal(c.newest, undefined);
+['construct with iterator']() {
+  let verifyEntries = function(c) {
+    asserteq(c.size, 4);
+    asserteq(c.limit, 4);
+    asserteq(c.oldest.key, 'adam');
+    asserteq(c.newest.key, 'bob');
+    asserteq(c.get('adam'), 29);
+    asserteq(c.get('john'), 26);
+    asserteq(c.get('angela'), 24);
+    asserteq(c.get('bob'), 48);
+  };
+
+  // with explicit limit
+  verifyEntries(new LRUMap(4, [
+    ['adam',   29],
+    ['john',   26],
+    ['angela', 24],
+    ['bob',    48],
+  ]));
+
+  // with inferred limit
+  verifyEntries(new LRUMap([
+    ['adam',   29],
+    ['john',   26],
+    ['angela', 24],
+    ['bob',    48],
+  ]));
+},
+
+assign() {
+  let c = new LRUMap([
+    ['adam',   29],
+    ['john',   26],
+    ['angela', 24],
+    ['bob',    48],
+  ]);
+
+  let newEntries = [
+    ['mimi',    1],
+    ['patrick', 2],
+    ['jane',    3],
+    ['fred',    4],
+  ];
+  c.assign(newEntries);
+  asserteq(c.size, 4);
+  asserteq(c.limit, 4);
+  asserteq(c.oldest.key, newEntries[0][0]);
+  asserteq(c.newest.key, newEntries[newEntries.length-1][0]);
+  let i = 0;
+  c.forEach(function(v, k) {
+    asserteq(k, newEntries[i][0]);
+    asserteq(v, newEntries[i][1]);
+    i++;
+  });
+
+  // assigning too many items should throw an exception
+  assert.throws(() => {
+    c.assign([
+      ['adam',   29],
+      ['john',   26],
+      ['angela', 24],
+      ['bob',    48],
+      ['ken',    30],
+    ]);
+  }, /overflow/);
+
+  // assigning less than limit should not affect limit but adjust size
+  c.assign([
+    ['adam',   29],
+    ['john',   26],
+    ['angela', 24],
+  ]);
+  asserteq(c.size, 3);
+  asserteq(c.limit, 4);
+},
+
+delete() {
+  let c = new LRUMap([
+    ['adam',   29],
+    ['john',   26],
+    ['angela', 24],
+    ['bob',    48],
+  ]);
+  c.delete('adam');
+  asserteq(c.size, 3);
+  c.delete('angela');
+  asserteq(c.size, 2);
+  c.delete('bob');
+  asserteq(c.size, 1);
+  c.delete('john');
+  asserteq(c.size, 0);
+  asserteq(c.oldest, undefined);
+  asserteq(c.newest, undefined);
+},
+
+clear() {
+  let c = new LRUMap(4);
+  c.set('adam', 29);
+  c.set('john', 26);
+  asserteq(c.size, 2);
+  c.clear();
+  asserteq(c.size, 0);
+  asserteq(c.oldest, undefined);
+  asserteq(c.newest, undefined);
 },
 
 shift() {
-  let c2 = new LRUCache(4);
-  assert(c2.size == 0);
-  c2.put('a', 1)
-  c2.put('b', 2)
-  c2.put('c', 3)
-  assert.equal(c2.size, 3);
+  let c2 = new LRUMap(4);
+  asserteq(c2.size, 0);
+  c2.set('a', 1)
+  c2.set('b', 2)
+  c2.set('c', 3)
+  asserteq(c2.size, 3);
 
   let e = c2.shift();
-  assert.equal(e.key, 'a');
-  assert.equal(e.value, 1);
+  asserteq(e.key, 'a');
+  asserteq(e.value, 1);
   
   e = c2.shift();
-  assert.equal(e.key, 'b');
-  assert.equal(e.value, 2);
+  asserteq(e.key, 'b');
+  asserteq(e.value, 2);
   
   e = c2.shift();
-  assert.equal(e.key, 'c');
-  assert.equal(e.value, 3);
+  asserteq(e.key, 'c');
+  asserteq(e.value, 3);
 
   // c2 should be empty
-  c2.forEach(function () { assert(false); }, true);
-  assert.equal(c2.size, 0);
+  c2.forEach(function () { assert(false); });
+  asserteq(c2.size, 0);
 },
 
-put() {
+set() {
   // Note: v0.1 allows putting same key multiple times. v0.2 does not.
-  c = new LRUCache(4);
-  c.put('a', 1);
-  c.put('a', 2);
-  c.put('a', 3);
-  c.put('a', 4);
-  assert(c.size == 1);
-  assert(c.newest === c.oldest);
-  assert.deepEqual(c.newest, {key:'a', value:4, newer: undefined, older: undefined });
+  c = new LRUMap(4);
+  c.set('a', 1);
+  c.set('a', 2);
+  c.set('a', 3);
+  c.set('a', 4);
+  asserteq(c.size, 1);
+  asserteq(c.newest, c.oldest);
+  assert.deepEqual(c.newest, {key:'a', value:4 });
 
-  c.put('a', 5);
-  assert(c.size == 1);
-  assert(c.newest === c.oldest);
-  assert.deepEqual(c.newest, {key:'a', value:5, newer: undefined, older: undefined });
+  c.set('a', 5);
+  asserteq(c.size, 1);
+  asserteq(c.newest, c.oldest);
+  assert.deepEqual(c.newest, {key:'a', value:5 });
 
-  c.put('b', 6);
-  assert(c.size == 2);
+  c.set('b', 6);
+  asserteq(c.size, 2);
   assert(c.newest !== c.oldest);
 
-  let ent1 = {key:'a', value:5, newer: undefined, older: undefined };
-  let ent0 = {key:'b', value:6, newer: undefined, older: ent1 };
-  ent1.newer = ent0;
-  assert.deepEqual(c.newest, ent0);
-  assert.deepEqual(c.oldest, ent1);
+  assert.deepEqual(c.newest, { key:'b', value:6 });
+  assert.deepEqual(c.oldest, { key:'a', value:5 });
 
   c.shift();
-  assert(c.size == 1);
+  asserteq(c.size, 1);
   c.shift();
-  assert(c.size == 0);
-  c.forEach(function(){ assert(false) }, undefined, true);  // check .newest correct
+  asserteq(c.size, 0);
+  c.forEach(function(){ assert(false) });
+},
+
+
+['entry iterator']() {
+  let c = new LRUMap(4, [
+    ['adam',   29],
+    ['john',   26],
+    ['angela', 24],
+    ['bob',    48],
+  ]);
+
+  let verifyEntries = function(iterable) {
+    asserteq(typeof iterable[Symbol.iterator], 'function');
+    let it = iterable[Symbol.iterator]();
+    assert.deepEqual(it.next().value, {key:'adam', value:29});
+    assert.deepEqual(it.next().value, {key:'john', value:26});
+    assert.deepEqual(it.next().value, {key:'angela', value:24});
+    assert.deepEqual(it.next().value, {key:'bob', value:48});
+    assert(it.next().done);
+  };
+
+  verifyEntries(c);
+  verifyEntries(c.entries());
+},
+
+
+['key iterator']() {
+  let c = new LRUMap(4, [
+    ['adam',   29],
+    ['john',   26],
+    ['angela', 24],
+    ['bob',    48],
+  ]);
+  let kit = c.keys();
+  asserteq(kit.next().value, 'adam');
+  asserteq(kit.next().value, 'john');
+  asserteq(kit.next().value, 'angela');
+  asserteq(kit.next().value, 'bob');
+  assert(kit.next().done);
+},
+
+
+['value iterator']() {
+  let c = new LRUMap(4, [
+    ['adam',   29],
+    ['john',   26],
+    ['angela', 24],
+    ['bob',    48],
+  ]);
+  let kit = c.values();
+  asserteq(kit.next().value, 29);
+  asserteq(kit.next().value, 26);
+  asserteq(kit.next().value, 24);
+  asserteq(kit.next().value, 48);
+  assert(kit.next().done);
 },
 
 
 toJSON() {
-  let c = new LRUCache(4);
-  c.put('adam', 29);
-  c.put('john', 26);
-  c.put('angela', 24);
-  c.put('bob', 48);
+  let c = new LRUMap(4, [
+    ['adam',   29],
+    ['john',   26],
+    ['angela', 24],
+    ['bob',    48],
+  ]);
   let json = c.toJSON();
   assert(json.length == 4);
   assert.deepEqual(json, [
@@ -157,7 +306,11 @@ function runNextTest(tests, testNames, allDoneCallback) {
   let t1 = Date.now();
   let next = function() {
     t1 = Date.now() - t1;
-    process.stdout.write('ok ('+fmttime(t1)+')\n');
+    if (t1 > 10) {
+      process.stdout.write('ok ('+fmttime(t1)+')\n');
+    } else {
+      process.stdout.write('ok\n');
+    }
     runNextTest(tests, testNames.slice(1), allDoneCallback);
   };
   try {
@@ -172,6 +325,12 @@ function runNextTest(tests, testNames, allDoneCallback) {
   }
 }
 
+let t = Date.now();
 runNextTest(tests, Object.keys(tests), function() {
-  console.log(Object.keys(tests).length+' tests passed');
+  t = Date.now() - t;
+  let timestr = '';
+  if (t > 10) {
+    timestr = '(' + fmttime(t) + ')';
+  }
+  console.log(`${Object.keys(tests).length} tests passed ${timestr}`);
 });

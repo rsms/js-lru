@@ -1,11 +1,11 @@
 {
-  "name": "lru-fast",
-  "version": "0.2.1",
-  "description": "finite key-value cache using the Least Recently Used (LRU) algorithm where the most recently used objects are keept in cache while less recently used items are purged",
+  "name": "lru-map",
+  "version": "0.3.0",
+  "description": "Finite key-value map using the Least Recently Used (LRU) algorithm where the most recently used objects are keept in the map while less recently used items are evicted to make room for new ones.",
   "main": "lru.js",
   "typings": "lru.d.ts",
   "scripts": {
-    "test": "node test.js",
+    "test": "node test.js && echo 'Verifying TypeScript definition...' && tsc --noEmit",
     "prepublish": "npm test",
     "benchmark": "node --expose-gc benchmark.js"
   },
@@ -16,7 +16,8 @@
   "keywords": [
     "cache",
     "lru",
-    "buffer"
+    "buffer",
+    "map",
   ],
   "author": "Rasmus Andersson <me@rsms.me>",
   "license": "MIT",

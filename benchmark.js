@@ -2,7 +2,7 @@
 // $ node --expose-gc benchmark.js
 var assert = require('assert'),
     util = require('util'),
-    LRUCache = require('./lru').LRUCache;
+    LRUMap = require('./lru').LRUMap;
 
 // Create a cache with N entries
 var N = 10000;
@@ -70,7 +70,7 @@ function measure(block) {
   process.stdout.write(msg);
 }
 
-var c = new LRUCache(N);
+var c = new LRUMap(N);
 
 console.log('N = ' + N + ', Iterations = ' + Iterations);
 
@@ -82,7 +82,7 @@ measure(function(){
   //    Simply append a new entry.
   //    There will be no reordering since we simply append to the tail.
   for (var i=N; --i;)
-    c.put('key'+i, i);
+    c.set('key'+i, i);
 });
 
 measure(function(){
@@ -123,7 +123,7 @@ measure(function(){
   // a. The complexity of put in this case should be:
   //    ( <get whith enough space> + <shift> )
   for (var i=N; --i;)
-    c.put('key2_'+i, i);
+    c.set('key2_'+i, i);
 });
 
 
@@ -138,18 +138,18 @@ measure(function(){
   // 7. put 
   //    Simply put N new items into an empty cache with exactly N space.
   for (var i=N; --i;)
-    c.put('key'+i, i);
+    c.set('key'+i, i);
 });
 
 // pre-build random key array
-var shuffledKeys = c.keys();
+var shuffledKeys = Array.from(c.keys());
 shuffledKeys.sort(function (){return Math.random()-0.5; });
 
 measure(function(){
-  // 8. remove random
+  // 8. delete random
   // a. Most operations (which are not entries at head or tail) will cause closes
   //    siblings to be relinked.
   for (var i=shuffledKeys.length, key; key = shuffledKeys[--i]; ) {
-    c.remove('key'+i, i);
+    c.delete('key'+i, i);
   }
 });

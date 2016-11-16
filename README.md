@@ -2,8 +2,6 @@
 
 A finite key-value cache using the [Least Recently Used (LRU)](http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used) cache algorithm where the most recently used objects are keept in cache while less recently used items are purged.
 
-This implementation is compatible with most JavaScript environments (including ye olde browser) and is very efficient.
-
 ## Terminology & design
 
 - Based on a doubly-linked list for low complexity random shuffling of entries.
@@ -11,7 +9,7 @@ This implementation is compatible with most JavaScript environments (including y
 - The cache object iself has a "head" (least recently used entry) and a
   "tail" (most recently used entry).
 
-- The "head" and "tail" are "entries" -- an entry might have a "newer" and
+- The "oldest" and "newest" are list entries -- an entry might have a "newer" and
   an "older" entry (doubly-linked, "older" being close to "head" and "newer"
   being closer to "tail").
 
@@ -34,10 +32,10 @@ Fancy ASCII art illustration of the general design:
 ## Example
 
 ```js
-let c = new LRUCache(3)
-c.put('adam',   29)
-c.put('john',   26)
-c.put('angela', 24)
+let c = new LRUMap(3)
+c.set('adam',   29)
+c.set('john',   26)
+c.set('angela', 24)
 c.toString()        // -> "adam:29 < john:26 < angela:24"
 c.get('john')       // -> 26
 
@@ -60,85 +58,101 @@ Additionally:
 - Run tests with `npm test`
 - Run benchmarks with `npm run benchmark`
 
+This implementation is compatible with modern JavaScript environments and depend on the following features not found in ES5:
+
+- `const` and `let` keywords
+- `Symbol` including `Symbol.iterator`
+- `Map`
+
+If you need ES5 compatibility e.g. to use with older browsers, [please use version 2](https://github.com/rsms/js-lru/tree/v2) which has a slightly less feature-full API but is well-tested and about as fast as this implementation.
+
 # API
 
-```ts
+The API imitates that of [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), which means that in most cases you can use `LRUMap` as a drop-in replacement for `Map`.
 
+```ts
 // An entry holds the key and value, and pointers to any older and newer entries.
 interface Entry<K,V> {
-  older :Entry<K,V>;
-  newer :Entry<K,V>;
   key   :K;
   value :V;
 }
 
-export class LRUCache<K,V> {
+export class LRUMap<K,V> {
   // Construct a new cache object which will hold up to limit entries.
   // When the size == limit, a `put` operation will evict the oldest entry.
-  constructor(limit :number);
+  //
+  // If `entries` is provided, all entries are added to the new map.
+  // `entries` should be an Array or other iterable object whose elements are
+  // key-value pairs (2-element Arrays). Each key-value pair is added to the new Map.
+  // null is treated as undefined.
+  constructor(limit :number, entries? :Iterable<[K,V]>);
+
+  // Convenience constructor equivalent to `new LRUMap(count(entries), entries)`
+  constructor(entries :Iterable<[K,V]>);
 
   // Current number of items
-  size: number;
+  size :number;
 
   // Maximum number of items this map can hold
-  limit: number;
+  limit :number;
 
-  // Least recently-used entry
-  oldest: Entry<K,V>;
+  // Least recently-used entry. Invalidated when map is modified.
+  oldest :Entry<K,V>;
 
-  // Most recently-used entry
-  newest: Entry<K,V>;
+  // Most recently-used entry. Invalidated when map is modified.
+  newest :Entry<K,V>;
+
+  // Replace all values in this map with key-value pairs (2-element Arrays) from
+  // provided iterable.
+  assign(entries :Iterable<[K,V]>) : void;
 
   // Put <value> into the cache associated with <key>. Replaces any existing entry
-  // with the same key.
-  // Returns any entry which was removed to make room for a new entry, or undefined.
-  // Note: The behavior of this method changed between v0.1 and v0.2 where in v0.1
-  // putting multiple values with the same key would store all values (accessible
-  // via forEach and other forms of traversal.) v0.2 stores exactly one value per key.
-  put(key :K, value :V) : Entry<K,V> | undefined;
+  // with the same key. Returns `this`.
+  set(key :K, value :V) : LRUMap<K,V>;
 
-  // Remove the least recently-used (oldest) entry from the cache.
-  // Returns the removed entry, or undefined if the cache was empty.
+  // Purge the least recently used (oldest) entry from the cache.
+  // Returns the removed entry or undefined if the cache was empty.
   shift() : Entry<K,V> | undefined;
 
   // Get and register recent use of <key>.
   // Returns the value associated with <key> or undefined if not in cache.
   get(key :K) : V | undefined;
 
-  // Check if <key> is in the cache without registering recent use. Feasible if
-  // you do not want to chage the state of the cache, but only "peek" at it.
+  // Check if there's a value for key in the cache without registering recent use.
+  has(key :K) : boolean;
+
+  // Access entry for <key> without registering recent use. Useful if you do not
+  // want to chage the state of the cache, but only "peek" at it.
   // Returns the entry associated with <key> if found, or undefined if not found.
   //
   // Note: The entry returned is managed by the cache (until purged) and thus
   // contains members with strong references which might be altered at any time by
   // the cache object. You should look at the returned entry as being immutable.
-  find(key :K) : V | undefined;
-
-  // Update the value of entry with <key>.
-  // Returns the old value, or undefined if entry was not in the cache.
-  set(key :K, value :V) : V | undefined;
+  find(key :K) : Entry<K,V> | undefined;
 
   // Remove entry <key> from cache and return its value.
   // Returns the removed value, or undefined if not found.
-  remove(key :K) : V | undefined;
+  delete(key :K) : V | undefined;
 
   // Removes all entries
-  removeAll();
+  clear() : void;
 
-  // Return an array containing all keys of entries stored in the cache object, in
-  // arbitrary order.
-  keys() : Array<K>;
+  // Returns an iterator over all keys, starting with the oldest.
+  keys() : Iterator<K>;
 
-  // Call `fun` for each entry. Starting with the newest entry if `desc` is a true
-  // value, otherwise starts with the oldest (head) enrty and moves towards the tail.
-  // context, Object key, Object value, LRUCache self
-  forEach(
-    fun :(context :any, key :K, value :V, self :LRUCache<K,V>)=>void,
-    context? :any,
-    desc? :boolean
-  ) : void;
+  // Returns an iterator over all values, starting with the oldest.
+  values() : Iterator<V>;
 
-  // Returns a JSON (array) representation
+  // Returns an iterator over all entries, starting with the oldest.
+  entries() : Iterator<Entry<K,V>>;
+
+  // Returns an iterator over all entries, starting with the oldest.
+  [Symbol.iterator]() : Iterator<Entry<K,V>>;
+
+  // Call `fun` for each entry, starting with the oldest entry.
+  forEach(fun :(value :V, key :K, m :LRUMap<K,V>)=>void, thisArg? :any) : void;
+
+  // Returns an object suitable for JSON encoding
   toJSON() : Array<{key :K, value :V}>;
 
   // Returns a human-readable text representation
@@ -149,15 +163,15 @@ export class LRUCache<K,V> {
 If you need to perform any form of finalization of items as they are evicted from the cache, wrapping the `shift` method is a good way to do it:
 
 ```js
-let c = new LRUCache(123);
+let c = new LRUMap(123);
 c.shift = function() {
-  let entry = LRUCache.prototype.shift.call(this);
+  let entry = LRUMap.prototype.shift.call(this);
   doSomethingWith(entry);
   return entry;
 }
 ```
 
-The internals calls `shift` as entries need to be evicted, so this method is guaranteed to be called for any item that's removed from the cache. The returned entry must not include any strong references to other entries. See note in the documentation of `LRUCache.prototype.put (Object key, Object value) -> Object entry`.
+The internals calls `shift` as entries need to be evicted, so this method is guaranteed to be called for any item that's removed from the cache. The returned entry must not include any strong references to other entries. See note in the documentation of `LRUMap.prototype.set()`.
 
 
 # MIT license

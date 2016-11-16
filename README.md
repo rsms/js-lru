@@ -147,10 +147,10 @@ export class LRUMap<K,V> {
   values() : Iterator<V>;
 
   // Returns an iterator over all entries, starting with the oldest.
-  entries() : Iterator<Entry<K,V>>;
+  entries() : Iterator<[K,V]>;
 
   // Returns an iterator over all entries, starting with the oldest.
-  [Symbol.iterator]() : Iterator<Entry<K,V>>;
+  [Symbol.iterator]() : Iterator<[K,V]>;
 
   // Call `fun` for each entry, starting with the oldest entry.
   forEach(fun :(value :V, key :K, m :LRUMap<K,V>)=>void, thisArg? :any) : void;

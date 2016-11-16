@@ -223,10 +223,10 @@ set() {
   let verifyEntries = function(iterable) {
     asserteq(typeof iterable[Symbol.iterator], 'function');
     let it = iterable[Symbol.iterator]();
-    assert.deepEqual(it.next().value, {key:'adam', value:29});
-    assert.deepEqual(it.next().value, {key:'john', value:26});
-    assert.deepEqual(it.next().value, {key:'angela', value:24});
-    assert.deepEqual(it.next().value, {key:'bob', value:48});
+    assert.deepEqual(it.next().value, ['adam',   29]);
+    assert.deepEqual(it.next().value, ['john',   26]);
+    assert.deepEqual(it.next().value, ['angela', 24]);
+    assert.deepEqual(it.next().value, ['bob',    48]);
     assert(it.next().done);
   };
 

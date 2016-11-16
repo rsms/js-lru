@@ -96,13 +96,13 @@ LRUMap.prototype.assign = function(entries) {
   this.size = this._keymap.size;
 };
 
-LRUMap.prototype.get = function(key, returnEntry) {
+LRUMap.prototype.get = function(key) {
   // First, find our cache entry
   var entry = this._keymap.get(key);
   if (!entry) return; // Not cached. Sorry.
   // As <key> was found in the cache, register it as being requested recently
   this._markEntryAsUsed(entry);
-  return returnEntry ? entry : entry.value;
+  return entry.value;
 };
 
 LRUMap.prototype.set = function(key, value) {
@@ -212,7 +212,7 @@ EntryIterator.prototype.next = function() {
   let ent = this.entry;
   if (ent) {
     this.entry = ent[NEWER];
-    return { done: false, value: ent };
+    return { done: false, value: [ent.key, ent.value] };
   } else {
     return { done: true, value: undefined };
   }

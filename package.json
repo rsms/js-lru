@@ -17,7 +17,7 @@
     "cache",
     "lru",
     "buffer",
-    "map",
+    "map"
   ],
   "author": "Rasmus Andersson <me@rsms.me>",
   "license": "MIT",

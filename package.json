@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/rsms/js-lru/issues"
   },
-  "homepage": "https://github.com/rsms/js-lru#readme"
+  "homepage": "https://github.com/rsms/js-lru#readme",
+  "devDependencies": {
+    "typescript": "^2.0.10"
+  }
 }

@@ -4,7 +4,7 @@ A finite key-value map using the [Least Recently Used (LRU)](http://en.wikipedia
 
 Useful when you want to limit use of memory to only hold commonly-used things.
 
-[![https://travis-ci.org/rsms/js-lru.svg?branch=master](Build status)](https://travis-ci.org/rsms/js-lru)
+[![Build status](https://travis-ci.org/rsms/js-lru.svg?branch=master)](https://travis-ci.org/rsms/js-lru)
 
 ## Terminology & design
 

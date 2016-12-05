@@ -176,7 +176,7 @@ LRUMap.prototype.has = function(key) {
 LRUMap.prototype['delete'] = function(key) {
   var entry = this._keymap.get(key);
   if (!entry) return;
-  delete this._keymap[entry.key]; // need to do delete unfortunately
+  this._keymap.delete(entry.key);
   if (entry[NEWER] && entry[OLDER]) {
     // relink the older entry with the newer entry
     entry[OLDER][NEWER] = entry[NEWER];

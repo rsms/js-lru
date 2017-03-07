@@ -56,7 +56,7 @@ c.toString()        // -> "angela:24 < john:26 < zorro:141"
 
 Just copy the code on lru.js — for minimal functionality, you only need the lines up until the comment that says "Following code is optional".
 
-If you're really into package managers and love having lots of complicated little files in your project, you can use [`npm install lru_map`](https://www.npmjs.com/package/lru_map)
+If you’re really into package managers and love having lots of complicated little files in your project, you can run [`npm install --save lru_map`](https://www.npmjs.com/package/lru_map) and then import the library with `var LRUMap = require('lru_map').LRUMap;` or `import {LRUMap} from 'lru_map';`.
 
 Additionally:
 

@@ -191,7 +191,7 @@ LRUMap.prototype['delete'] = function(key) {
     entry[OLDER][NEWER] = undefined;
     // link the newer entry to head
     this.newest = entry[OLDER];
-  } else {// if(entry[OLDER] === undefined && entry.newer === undefined) {
+  } else {// if(entry[OLDER] === undefined && entry[NEWER] === undefined) {
     this.oldest = this.newest = undefined;
   }
 

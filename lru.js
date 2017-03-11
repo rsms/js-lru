@@ -16,6 +16,11 @@
  *
  *  removed  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  added
  */
+(function(g,f){
+  const e = typeof exports == 'object' ? exports : typeof g == 'object' ? g : {};
+  f(e);
+  if (typeof define == 'function' && define.amd) { define('lru', e); }
+})(this, function(exports) {
 
 const NEWER = Symbol('newer');
 const OLDER = Symbol('older');
@@ -39,6 +44,8 @@ function LRUMap(limit, entries) {
     }
   }
 }
+
+exports.LRUMap = LRUMap;
 
 function Entry(key, value) {
   this.key = key;
@@ -295,5 +302,4 @@ LRUMap.prototype.toString = function() {
   return s;
 };
 
-// Export ourselves
-if (typeof this === 'object') this.LRUMap = LRUMap;
+});

@@ -54,22 +54,35 @@ c.toString()        // -> "angela:24 < john:26 < zorro:141"
 
 # Usage
 
-Just copy the code on lru.js — for minimal functionality, you only need the lines up until the comment that says "Following code is optional".
+**Recommended:** Copy the code in lru.js or copy the lru.js and lru.d.ts files into your source directory. For minimal functionality, you only need the lines up until the comment that says "Following code is optional".
 
-If you're really into package managers and love having lots of complicated little files in your project, you can use [`npm install lru_map`](https://www.npmjs.com/package/lru_map)
+**Using NPM:** [`yarn add lru_map`](https://www.npmjs.com/package/lru_map) (note that because NPM is one large flat namespace, you need to import the module as "lru_map" rather than simply "lru".)
 
-Additionally:
+**Using AMD:** An [AMD](https://github.com/amdjs/amdjs-api/blob/master/AMD.md#amd) module loader like [`amdld`](https://github.com/rsms/js-amdld) can be used to load this module as well. There should be nothing to configure.
+
+**Testing**:
 
 - Run tests with `npm test`
 - Run benchmarks with `npm run benchmark`
 
-This implementation is compatible with modern JavaScript environments and depend on the following features not found in ES5:
+**ES compatibility:** This implementation is compatible with modern JavaScript environments and depend on the following features not found in ES5:
 
 - `const` and `let` keywords
 - `Symbol` including `Symbol.iterator`
 - `Map`
 
-If you need ES5 compatibility e.g. to use with older browsers, [please use version 2](https://github.com/rsms/js-lru/tree/v2) which has a slightly less feature-full API but is well-tested and about as fast as this implementation.
+> Note: If you need ES5 compatibility e.g. to use with older browsers, [please use version 2](https://github.com/rsms/js-lru/tree/v2) which has a slightly less feature-full API but is well-tested and about as fast as this implementation.
+
+**Using with TypeScript**
+
+This module comes with complete typing coverage for use with TypeScript. If you copied the code or files rather than using a module loader, make sure to include `lru.d.ts` into the same location where you put `lru.js`.
+
+```ts
+import {LRUMap} from './lru'
+// import {LRUMap} from 'lru'     // when using via AMD
+// import {LRUMap} from 'lru_map' // when using from NPM
+console.log('LRUMap:', LRUMap)
+```
 
 # API
 

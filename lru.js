@@ -57,7 +57,7 @@ function Entry(key, value) {
 
 LRUMap.prototype._markEntryAsUsed = function(entry) {
   if (entry === this.newest) {
-    // Already the most recenlty used entry, so no need to update the list
+    // Already the most recently used entry, so no need to update the list
     return;
   }
   // HEAD--------------TAIL

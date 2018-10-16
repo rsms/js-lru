@@ -134,7 +134,7 @@ export class LRUMap<K,V> {
   has(key :K) : boolean;
 
   // Access value for <key> without registering recent use. Useful if you do not
-  // want to chage the state of the map, but only "peek" at it.
+  // want to change the state of the map, but only "peek" at it.
   // Returns the value associated with <key> if found, or undefined if not found.
   find(key :K) : V | undefined;
 

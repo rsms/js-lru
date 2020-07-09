@@ -8,7 +8,7 @@
   "scripts": {
     "test": "npm run build && node test.js && echo 'Verifying TypeScript definition...' && tsc --noEmit",
     "build": "esbuild --minify --sourcemap --outfile=dist/lru.js lru.js",
-    "prepublish": "npm test",
+    "prepublishOnly": "npm test",
     "benchmark": "node --expose-gc benchmark.js"
   },
   "repository": {

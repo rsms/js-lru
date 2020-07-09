@@ -1,9 +1,3 @@
-// An entry holds the key and value, and pointers to any older and newer entries.
-interface Entry<K,V> {
-  key   :K;
-  value :V;
-}
-
 export class LRUMap<K,V> {
   // Construct a new cache object which will hold up to limit entries.
   // When the size == limit, a `put` operation will evict the oldest entry.
@@ -80,4 +74,10 @@ export class LRUMap<K,V> {
 
   // Returns a human-readable text representation
   toString() : string;
+}
+
+// An entry holds the key and value, and pointers to any older and newer entries.
+interface Entry<K,V> {
+  key   :K;
+  value :V;
 }

@@ -2,7 +2,7 @@
 // $ node test.js
 // (Might work with other CommonJS-compatible environments)
 const assert = require('assert');
-const LRUMap = require('./lru').LRUMap;
+const LRUMap = require('./dist/lru').LRUMap;
 const asserteq = assert.equal;
 const tests = {
 
@@ -167,11 +167,11 @@ shift() {
   let e = c2.shift();
   asserteq(e[0], 'a');
   asserteq(e[1], 1);
-  
+
   e = c2.shift();
   asserteq(e[0], 'b');
   asserteq(e[1], 2);
-  
+
   e = c2.shift();
   asserteq(e[0], 'c');
   asserteq(e[1], 3);

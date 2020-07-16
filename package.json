@@ -1,6 +1,6 @@
 {
   "name": "lru_map",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Finite key-value map using the Least Recently Used (LRU) algorithm where the most recently used objects are keept in the map while less recently used items are evicted to make room for new ones.",
   "main": "dist/lru.js",
   "types": "lru.d.ts",

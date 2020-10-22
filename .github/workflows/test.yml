@@ -4,7 +4,7 @@
 # for "npm ci" see https://docs.npmjs.com/cli/ci.html
 #
 
-name: Node.js CI
+name: npm-test
 
 on: [push, pull_request]
 

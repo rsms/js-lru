@@ -133,14 +133,17 @@ delete() {
     ['angela', 24],
     ['bob',    48],
   ]);
+  asserteq(c.get('adam'), 29);
   c.delete('adam');
   asserteq(c.size, 3);
+  asserteq(c.get('adam'), undefined);
   c.delete('angela');
   asserteq(c.size, 2);
   c.delete('bob');
   asserteq(c.size, 1);
   c.delete('john');
   asserteq(c.size, 0);
+  asserteq(c.get('john'), undefined);
   asserteq(c.oldest, undefined);
   asserteq(c.newest, undefined);
 },

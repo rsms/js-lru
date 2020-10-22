@@ -4,7 +4,7 @@ A finite key-value map using the [Least Recently Used (LRU)](http://en.wikipedia
 
 Useful when you want to limit use of memory to only hold commonly-used things.
 
-[![Build status](https://travis-ci.org/rsms/js-lru.svg?branch=master)](https://travis-ci.org/rsms/js-lru)
+[![Test status](https://github.com/rsms/js-lru/workflows/npm-test/badge.svg)](https://github.com/rsms/js-lru/actions?query=workflow%3Anpm-test)
 
 ## Terminology & design
 
@@ -17,19 +17,19 @@ Useful when you want to limit use of memory to only hold commonly-used things.
   an "older" entry (doubly-linked, "older" being close to "head" and "newer"
   being closer to "tail").
 
-- Key lookup is done through a key-entry mapping native object, which on most 
-  platforms mean `O(1)` complexity. This comes at a very low memory cost  (for 
+- Key lookup is done through a key-entry mapping native object, which on most
+  platforms mean `O(1)` complexity. This comes at a very low memory cost  (for
   storing two extra pointers for each entry).
 
 Fancy ASCII art illustration of the general design:
 
 ```txt
-           entry             entry             entry             entry        
-           ______            ______            ______            ______       
-          | head |.newer => |      |.newer => |      |.newer => | tail |      
+           entry             entry             entry             entry
+           ______            ______            ______            ______
+          | head |.newer => |      |.newer => |      |.newer => | tail |
 .oldest = |  A   |          |  B   |          |  C   |          |  D   | = .newest
-          |______| <= older.|______| <= older.|______| <= older.|______|      
-                                                                             
+          |______| <= older.|______| <= older.|______| <= older.|______|
+
        removed  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  added
 ```
 

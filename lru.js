@@ -224,7 +224,7 @@ class LRUMap {
     return new EntryIterator(this.oldest);
   }
 
-  forEach = function(fun, thisObj) {
+  forEach(fun, thisObj) {
     if (typeof thisObj !== 'object') {
       thisObj = this;
     }

@@ -3,4 +3,3 @@ _local
 tstest.js
 *-test.js
 /node_modules
-/dist

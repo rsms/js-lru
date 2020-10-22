@@ -7,7 +7,7 @@
   "typings": "lru.d.ts",
   "scripts": {
     "test": "npm run build && node test.js && echo 'Verifying TypeScript definition...' && tsc --noEmit",
-    "build": "esbuild --minify --sourcemap --outfile=dist/lru.js lru.js",
+    "build": "esbuild --minify --sourcemap --target=es2016 --outfile=dist/lru.js lru.js",
     "prepublishOnly": "npm test",
     "benchmark": "node --expose-gc benchmark.js"
   },
@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/rsms/js-lru#readme",
   "devDependencies": {
-    "esbuild": "^0.5.25",
-    "typescript": "^3.9.6"
+    "esbuild": "^0.5.26",
+    "typescript": "^3.9.7"
   }
 }

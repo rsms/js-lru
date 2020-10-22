@@ -6,7 +6,7 @@
   "types": "lru.d.ts",
   "typings": "lru.d.ts",
   "scripts": {
-    "test": "npm run build && node test.js && echo 'Verifying TypeScript definition...' && tsc --noEmit",
+    "test": "node test.js && echo 'Verifying TypeScript definition...' && tsc --noEmit",
     "build": "esbuild --minify --sourcemap --target=es2016 --outfile=dist/lru.js lru.js",
     "prepublishOnly": "npm test",
     "benchmark": "node --expose-gc benchmark.js"

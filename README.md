@@ -6,6 +6,7 @@ Useful when you want to limit use of memory to only hold commonly-used things.
 
 [![Test status](https://github.com/rsms/js-lru/workflows/npm-test/badge.svg)](https://github.com/rsms/js-lru/actions?query=workflow%3Anpm-test)
 
+
 ## Terminology & design
 
 - Based on a doubly-linked list for low complexity random shuffling of entries.
@@ -33,6 +34,7 @@ Fancy ASCII art illustration of the general design:
        removed  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  added
 ```
 
+
 ## Example
 
 ```js
@@ -52,6 +54,7 @@ c.set('zorro', 141) // -> {key:adam, value:29}
 c.toString()        // -> "angela:24 < john:26 < zorro:141"
 ```
 
+
 # Usage
 
 **Recommended:** Copy the code in lru.js or copy the lru.js and lru.d.ts files into your source directory. For minimal functionality, you only need the lines up until the comment that says "Following code is optional".
@@ -65,14 +68,6 @@ c.toString()        // -> "angela:24 < john:26 < zorro:141"
 - Run tests with `npm test`
 - Run benchmarks with `npm run benchmark`
 
-**ES compatibility:** This implementation is compatible with modern JavaScript environments and depend on the following features not found in ES5:
-
-- `const` and `let` keywords
-- `Symbol` including `Symbol.iterator`
-- `Map`
-
-> Note: If you need ES5 compatibility e.g. to use with older browsers, [please use version 2](https://github.com/rsms/js-lru/tree/v2) which has a slightly less feature-full API but is well-tested and about as fast as this implementation.
-
 **Using with TypeScript**
 
 This module comes with complete typing coverage for use with TypeScript. If you copied the code or files rather than using a module loader, make sure to include `lru.d.ts` into the same location where you put `lru.js`.
@@ -83,6 +78,7 @@ import {LRUMap} from './lru'
 // import {LRUMap} from 'lru_map' // when using from NPM
 console.log('LRUMap:', LRUMap)
 ```
+
 
 # API
 
@@ -190,25 +186,3 @@ c.shift = function() {
 
 The internals calls `shift` as entries need to be evicted, so this method is guaranteed to be called for any item that's removed from the cache. The returned entry must not include any strong references to other entries. See note in the documentation of `LRUMap.prototype.set()`.
 
-
-# MIT license
-
-Copyright (c) 2010-2016 Rasmus Andersson <https://rsms.me/>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.

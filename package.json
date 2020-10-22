@@ -9,6 +9,7 @@
     "test": "node test.js && echo 'Verifying TypeScript definition...' && tsc --noEmit",
     "build": "esbuild --minify --sourcemap --target=es2016 --outfile=dist/lru.js lru.js",
     "prepublishOnly": "npm test",
+    "dist": "git status -uno --porcelain | grep -v \"?? \" && echo 'aborted; uncommitted changes' || (npm publish . && git tag v`node -p 'require(\"./package.json\").version'`) && echo 'Final step:'; echo '  git push origin master' v`node -p 'require(\"./package.json\").version'`",
     "benchmark": "node --expose-gc benchmark.js"
   },
   "repository": {

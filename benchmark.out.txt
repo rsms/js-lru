@@ -1,24 +1,24 @@
-> lru_map@0.3.0 benchmark /src/js-lru
+> lru_map@0.4.1 benchmark /Users/rsms/src/js-lru
 > node --expose-gc benchmark.js
 
 N = 10000, Iterations = 1000
 
 ----------
-  function (){
+  function(){
     // 1. put
     //    Simply append a new entry.
     //    There will be no reordering since we simply append to the tail.
     for (var i=N; --i;)
       c.set('key'+i, i);
   }
-   rss:        +9,380 kB -- (19,564 kB -> 28,944 kB)
-   heap total: +6,144 kB -- (11,260 kB -> 17,404 kB)
-   heap used:  +1,640 kB -- (3,819 kB -> 5,459 kB)
+   rss:        +7,164 kB -- (19,944 kB -> 27,108 kB)
+   heap total: +3,576 kB -- (5,128 kB -> 8,704 kB)
+   heap used:  +1,504 kB -- (2,052 kB -> 3,556 kB)
 
-  -- 1.192 ms avg per iteration --
+  -- 0.798 ms avg per iteration --
 
 ----------
-  function (){
+  function(){
     // 2. get recent -> old
     //    Get entries starting with newest, effectively reversing the list.
     //
@@ -31,14 +31,14 @@ N = 10000, Iterations = 1000
     for (var i=1,L=N+1; i<L; ++i)
       c.get('key'+i, i);
   }
-   rss:        +340 kB -- (29,112 kB -> 29,452 kB)
-   heap total: +0 kB -- (18,428 kB -> 18,428 kB)
-   heap used:  -255 kB -- (5,479 kB -> 5,224 kB)
+   rss:        +300 kB -- (27,180 kB -> 27,480 kB)
+   heap total: +0 kB -- (8,704 kB -> 8,704 kB)
+   heap used:  +11 kB -- (3,552 kB -> 3,563 kB)
 
-  -- 1.197 ms avg per iteration --
+  -- 0.858 ms avg per iteration --
 
 ----------
-  function (){
+  function(){
     // 3. get old -> recent
     //    Get entries starting with oldest, effectively reversing the list.
     //
@@ -46,28 +46,28 @@ N = 10000, Iterations = 1000
     for (var i=1,L=N+1; i<L; ++i)
       c.get('key'+i);
   }
-   rss:        -344 kB -- (29,476 kB -> 29,132 kB)
-   heap total: +0 kB -- (18,428 kB -> 18,428 kB)
-   heap used:  +3 kB -- (5,211 kB -> 5,215 kB)
+   rss:        +724 kB -- (27,480 kB -> 28,204 kB)
+   heap total: +0 kB -- (8,704 kB -> 8,704 kB)
+   heap used:  +5 kB -- (3,557 kB -> 3,562 kB)
 
-  -- 1.161 ms avg per iteration --
+  -- 0.753 ms avg per iteration --
 
 ----------
-  function (){
+  function(){
     // 4. get missing
     //    Get try to get entries not in the cache.
     //  - Same conditions apply as for test 2, section a.
     for (var i=1,L=N+1; i<L; ++i)
       c.get('xkey'+i);
   }
-   rss:        +0 kB -- (29,132 kB -> 29,132 kB)
-   heap total: +0 kB -- (18,428 kB -> 18,428 kB)
-   heap used:  +5 kB -- (5,210 kB -> 5,215 kB)
+   rss:        +612 kB -- (28,252 kB -> 28,864 kB)
+   heap total: +0 kB -- (8,704 kB -> 8,704 kB)
+   heap used:  +8 kB -- (3,555 kB -> 3,562 kB)
 
-  -- 1.035 ms avg per iteration --
+  -- 0.63 ms avg per iteration --
 
 ----------
-  function (){
+  function(){
     // 5. put overflow
     //    Overflow the cache with N more items than it can hold.
     // a. The complexity of put in this case should be:
@@ -75,40 +75,40 @@ N = 10000, Iterations = 1000
     for (var i=N; --i;)
       c.set('key2_'+i, i);
   }
-   rss:        +2,036 kB -- (29,132 kB -> 31,168 kB)
-   heap total: +916 kB -- (18,428 kB -> 19,344 kB)
-   heap used:  +542 kB -- (5,211 kB -> 5,752 kB)
+   rss:        +5,384 kB -- (28,868 kB -> 34,252 kB)
+   heap total: +5,312 kB -- (8,704 kB -> 14,016 kB)
+   heap used:  +531 kB -- (3,555 kB -> 4,086 kB)
 
-  -- 1.185 ms avg per iteration --
+  -- 0.757 ms avg per iteration --
 
 ----------
-  function (){
+  function(){
     // 6. shift head -> tail
     //    Remove all entries going from head to tail
     for (var i=1,L=N+1; i<L; ++i)
       c.shift();
   }
-   rss:        -1,528 kB -- (31,288 kB -> 29,760 kB)
-   heap total: +108 kB -- (18,320 kB -> 18,428 kB)
-   heap used:  -1,819 kB -- (5,748 kB -> 3,929 kB)
+   rss:        +920 kB -- (34,260 kB -> 35,180 kB)
+   heap total: -1,668 kB -- (14,016 kB -> 12,348 kB)
+   heap used:  -1,746 kB -- (4,078 kB -> 2,332 kB)
 
-  -- 0.023 ms avg per iteration --
+  -- 0.021 ms avg per iteration --
 
 ----------
-  function (){
-    // 7. put 
+  function(){
+    // 7. put
     //    Simply put N new items into an empty cache with exactly N space.
     for (var i=N; --i;)
       c.set('key'+i, i);
   }
-   rss:        +8,064 kB -- (29,876 kB -> 37,940 kB)
-   heap total: +8,192 kB -- (17,404 kB -> 25,596 kB)
-   heap used:  +1,327 kB -- (3,904 kB -> 5,232 kB)
+   rss:        +1,132 kB -- (32,760 kB -> 33,892 kB)
+   heap total: +1,732 kB -- (11,836 kB -> 13,568 kB)
+   heap used:  +1,240 kB -- (2,324 kB -> 3,564 kB)
 
-  -- 1.264 ms avg per iteration --
+  -- 0.827 ms avg per iteration --
 
 ----------
-  function (){
+  function(){
     // 8. delete random
     // a. Most operations (which are not entries at head or tail) will cause closes
     //    siblings to be relinked.
@@ -116,8 +116,8 @@ N = 10000, Iterations = 1000
       c.delete('key'+i, i);
     }
   }
-   rss:        +132 kB -- (38,088 kB -> 38,220 kB)
-   heap total: +0 kB -- (25,596 kB -> 25,596 kB)
-   heap used:  +410 kB -- (5,380 kB -> 5,789 kB)
+   rss:        +300 kB -- (33,956 kB -> 34,256 kB)
+   heap total: -452 kB -- (13,568 kB -> 13,116 kB)
+   heap used:  -985 kB -- (3,650 kB -> 2,665 kB)
 
-  -- 1.914 ms avg per iteration --
+  -- 0.502 ms avg per iteration --

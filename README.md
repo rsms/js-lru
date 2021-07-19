@@ -159,6 +159,9 @@ export class LRUMap<K,V> {
   // Returns an object suitable for JSON encoding
   toJSON() : Array<{key :K, value :V}>;
 
+  // Returns an LRU Map from JSON encoding
+  fromJSON(json :Array<{key :K, value :V}>) : LRUMap<K,V>;
+
   // Returns a human-readable text representation
   toString() : string;
 }

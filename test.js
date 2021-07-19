@@ -287,6 +287,19 @@ toJSON() {
   ]);
 },
 
+fromJSON() {
+  let c = new LRUMap(4, [
+    ['adam',   29],
+    ['john',   26],
+    ['angela', 24],
+    ['bob',    48],
+  ]);
+  let json = c.toJSON();
+  let n = LRUMap.fromJSON(json);
+  assert(n.size == 4);
+  assert.deepEqual(n, c);
+  assert.deepEqual(n.entries(), c.entries());
+},
 
 }; // tests
 

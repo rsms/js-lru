@@ -245,6 +245,13 @@ class LRUMap {
     return s;
   }
 
+  /** Static method to create an LRUMap instance from a JSON export of a previous LRUMap */
+  static fromJSON(json) {
+    return new LRUMap(json.map(it => {
+      return [it.key, it.value]
+    }))
+  }
+
   /** Returns a String representation */
   toString() {
     var s = '', entry = this.oldest;

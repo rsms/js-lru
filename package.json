@@ -36,7 +36,7 @@
   },
   "homepage": "https://github.com/rsms/js-lru#readme",
   "devDependencies": {
-    "esbuild": "^0.5.26",
+    "esbuild": "^0.25.0",
     "typescript": "^3.9.7"
   }
 }
